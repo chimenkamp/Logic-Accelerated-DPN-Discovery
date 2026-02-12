@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dpn-discovery"
+version = "0.1.0"
+description = "Logic-Accelerated Data-Aware Petri Net Discovery Pipeline"
+readme = "docs/implementation_details.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+dependencies = [
+    "z3-solver>=4.12",
+    "pm4py>=2.7",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+dpn-discover = "dpn_discovery.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

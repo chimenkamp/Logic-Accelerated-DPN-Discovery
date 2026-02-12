@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pnml>
+  <net id="dpn_net" type="http://www.pnml.org/version-2009/grammar/pnml">
+    <page id="page0">
+      <place id="p_q0">
+        <name>
+          <text>p_q0</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="p_q1">
+        <name>
+          <text>p_q1</text>
+        </name>
+      </place>
+      <place id="p_q2">
+        <name>
+          <text>p_q2</text>
+        </name>
+      </place>
+      <place id="p_q3">
+        <name>
+          <text>p_q3</text>
+        </name>
+      </place>
+      <transition id="t_Submit_1">
+        <name>
+          <text>Submit</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q0_to_t_Submit_1" source="p_q0" target="t_Submit_1" />
+      <arc id="arc_t_Submit_1_to_p_q1" source="t_Submit_1" target="p_q1" />
+      <transition id="t_AutoApprove_2">
+        <name>
+          <text>AutoApprove</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>1083/2 &gt;= amount</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q1_to_t_AutoApprove_2" source="p_q1" target="t_AutoApprove_2" />
+      <arc id="arc_t_AutoApprove_2_to_p_q2" source="t_AutoApprove_2" target="p_q2" />
+      <transition id="t_Conclude_3">
+        <name>
+          <text>Conclude</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q2_to_t_Conclude_3" source="p_q2" target="t_Conclude_3" />
+      <arc id="arc_t_Conclude_3_to_p_q3" source="t_Conclude_3" target="p_q3" />
+      <transition id="t_ManagerApprove_4">
+        <name>
+          <text>ManagerApprove</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>Not(1083/2 &gt;= amount)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q1_to_t_ManagerApprove_4" source="p_q1" target="t_ManagerApprove_4" />
+      <arc id="arc_t_ManagerApprove_4_to_p_q2" source="t_ManagerApprove_4" target="p_q2" />
+    </page>
+    <toolspecific tool="dpn-discovery" version="1.0">
+      <variable name="amount" />
+    </toolspecific>
+  </net>
+</pnml>

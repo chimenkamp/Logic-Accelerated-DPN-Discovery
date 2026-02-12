@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pnml>
+  <net id="dpn_net" type="http://www.pnml.org/version-2009/grammar/pnml">
+    <page id="page0">
+      <place id="p_q0">
+        <name>
+          <text>p_q0</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="p_q1">
+        <name>
+          <text>p_q1</text>
+        </name>
+      </place>
+      <place id="p_q19">
+        <name>
+          <text>p_q19</text>
+        </name>
+      </place>
+      <place id="p_q2">
+        <name>
+          <text>p_q2</text>
+        </name>
+      </place>
+      <transition id="t_T1_1">
+        <name>
+          <text>T1</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="x">0</update>
+          <update variable="y">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q0_to_t_T1_1" source="p_q0" target="t_T1_1" />
+      <arc id="arc_t_T1_1_to_p_q1" source="t_T1_1" target="p_q1" />
+      <transition id="t_T2_2">
+        <name>
+          <text>T2</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="x">1 + x</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q1_to_t_T2_2" source="p_q1" target="t_T2_2" />
+      <arc id="arc_t_T2_2_to_p_q2" source="t_T2_2" target="p_q2" />
+      <transition id="t_T4_3">
+        <name>
+          <text>T4</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="y">x</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q2_to_t_T4_3" source="p_q2" target="t_T4_3" />
+      <arc id="arc_t_T4_3_to_p_q1" source="t_T4_3" target="p_q1" />
+      <transition id="t_T3_4">
+        <name>
+          <text>T3</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q2_to_t_T3_4" source="p_q2" target="t_T3_4" />
+      <arc id="arc_t_T3_4_to_p_q19" source="t_T3_4" target="p_q19" />
+    </page>
+    <toolspecific tool="dpn-discovery" version="1.0">
+      <variable name="x" />
+      <variable name="y" />
+    </toolspecific>
+  </net>
+</pnml>

@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pnml>
+  <net id="dpn_net" type="http://www.pnml.org/version-2009/grammar/pnml">
+    <page id="page0">
+      <place id="p_q0">
+        <name>
+          <text>p_q0</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="p_q1">
+        <name>
+          <text>p_q1</text>
+        </name>
+      </place>
+      <place id="p_q2">
+        <name>
+          <text>p_q2</text>
+        </name>
+      </place>
+      <place id="p_q3">
+        <name>
+          <text>p_q3</text>
+        </name>
+      </place>
+      <place id="p_q32">
+        <name>
+          <text>p_q32</text>
+        </name>
+      </place>
+      <place id="p_q4">
+        <name>
+          <text>p_q4</text>
+        </name>
+      </place>
+      <place id="p_q5">
+        <name>
+          <text>p_q5</text>
+        </name>
+      </place>
+      <transition id="t_T_Setup_1">
+        <name>
+          <text>T_Setup</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="a">0</update>
+          <update variable="b">1</update>
+          <update variable="i">1</update>
+          <update variable="n">a</update>
+          <update variable="result">0</update>
+          <update variable="temp">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q0_to_t_T_Setup_1" source="p_q0" target="t_T_Setup_1" />
+      <arc id="arc_t_T_Setup_1_to_p_q1" source="t_T_Setup_1" target="p_q1" />
+      <transition id="t_T_CheckLoop_2">
+        <name>
+          <text>T_CheckLoop</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>21/2 &gt;= temp</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q1_to_t_T_CheckLoop_2" source="p_q1" target="t_T_CheckLoop_2" />
+      <arc id="arc_t_T_CheckLoop_2_to_p_q2" source="t_T_CheckLoop_2" target="p_q2" />
+      <transition id="t_T_CalcTemp_3">
+        <name>
+          <text>T_CalcTemp</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="temp">a + b</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q2_to_t_T_CalcTemp_3" source="p_q2" target="t_T_CalcTemp_3" />
+      <arc id="arc_t_T_CalcTemp_3_to_p_q3" source="t_T_CalcTemp_3" target="p_q3" />
+      <transition id="t_T_SetA_4">
+        <name>
+          <text>T_SetA</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="a">b</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q3_to_t_T_SetA_4" source="p_q3" target="t_T_SetA_4" />
+      <arc id="arc_t_T_SetA_4_to_p_q4" source="t_T_SetA_4" target="p_q4" />
+      <transition id="t_T_SetB_5">
+        <name>
+          <text>T_SetB</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="b">temp</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q4_to_t_T_SetB_5" source="p_q4" target="t_T_SetB_5" />
+      <arc id="arc_t_T_SetB_5_to_p_q5" source="t_T_SetB_5" target="p_q5" />
+      <transition id="t_T_IncI_6">
+        <name>
+          <text>T_IncI</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>True</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="i">1 + i</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q5_to_t_T_IncI_6" source="p_q5" target="t_T_IncI_6" />
+      <arc id="arc_t_T_IncI_6_to_p_q1" source="t_T_IncI_6" target="p_q1" />
+      <transition id="t_T_CheckDone_7">
+        <name>
+          <text>T_CheckDone</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>Not(21/2 &gt;= temp)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="result">b</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q1_to_t_T_CheckDone_7" source="p_q1" target="t_T_CheckDone_7" />
+      <arc id="arc_t_T_CheckDone_7_to_p_q32" source="t_T_CheckDone_7" target="p_q32" />
+    </page>
+    <toolspecific tool="dpn-discovery" version="1.0">
+      <variable name="a" />
+      <variable name="b" />
+      <variable name="i" />
+      <variable name="n" />
+      <variable name="result" />
+      <variable name="temp" />
+    </toolspecific>
+  </net>
+</pnml>
