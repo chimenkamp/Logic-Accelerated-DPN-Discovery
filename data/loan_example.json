@@ -1,0 +1,60 @@
+{
+  "traces": [
+    {
+      "events": [
+        {"activity": "Submit",      "payload": {"amount": 500,   "counter": 0}},
+        {"activity": "AutoApprove", "payload": {"amount": 500,   "counter": 1}}
+      ]
+    },
+    {
+      "events": [
+        {"activity": "Submit",      "payload": {"amount": 300,   "counter": 0}},
+        {"activity": "AutoApprove", "payload": {"amount": 300,   "counter": 1}}
+      ]
+    },
+    {
+      "events": [
+        {"activity": "Submit",  "payload": {"amount": 5000,  "counter": 0}},
+        {"activity": "Review",  "payload": {"amount": 5000,  "counter": 1}},
+        {"activity": "Approve", "payload": {"amount": 5000,  "counter": 2}}
+      ]
+    },
+    {
+      "events": [
+        {"activity": "Submit",  "payload": {"amount": 8000,  "counter": 0}},
+        {"activity": "Review",  "payload": {"amount": 8000,  "counter": 1}},
+        {"activity": "Approve", "payload": {"amount": 8000,  "counter": 2}}
+      ]
+    },
+    {
+      "events": [
+        {"activity": "Submit", "payload": {"amount": 10000, "counter": 0}},
+        {"activity": "Review", "payload": {"amount": 10000, "counter": 1}},
+        {"activity": "Reject", "payload": {"amount": 10000, "counter": 2}}
+      ]
+    },
+    {
+      "events": [
+        {"activity": "Submit", "payload": {"amount": 15000, "counter": 0}},
+        {"activity": "Review", "payload": {"amount": 15000, "counter": 1}},
+        {"activity": "Reject", "payload": {"amount": 15000, "counter": 2}}
+      ]
+    },
+    {
+      "events": [
+        {"activity": "Submit",  "payload": {"amount": 7000,  "counter": 0}},
+        {"activity": "Review",  "payload": {"amount": 7000,  "counter": 1}},
+        {"activity": "Review",  "payload": {"amount": 7000,  "counter": 2}},
+        {"activity": "Approve", "payload": {"amount": 7000,  "counter": 3}}
+      ]
+    },
+    {
+      "events": [
+        {"activity": "Submit", "payload": {"amount": 9000,  "counter": 0}},
+        {"activity": "Review", "payload": {"amount": 9000,  "counter": 1}},
+        {"activity": "Review", "payload": {"amount": 9000,  "counter": 2}},
+        {"activity": "Reject", "payload": {"amount": 9000,  "counter": 3}}
+      ]
+    }
+  ]
+}

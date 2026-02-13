@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="7OTNl9KcRI1ZxtzEWeSW" name="Page-1">
-        <mxGraphModel dx="4252" dy="3494" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="1" shadow="0">
+        <mxGraphModel dx="2782" dy="2850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="1" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -290,7 +290,7 @@
                 <mxCell id="106" value="" style="rounded=1;whiteSpace=wrap;html=1;arcSize=3;fillColor=#D5FFD3;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="1920" y="120" width="460" height="490" as="geometry"/>
                 </mxCell>
-                <mxCell id="361" style="edgeStyle=none;html=1;exitX=0.539;exitY=-0.135;exitDx=0;exitDy=0;entryX=0.576;entryY=0.995;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=3;exitPerimeter=0;" edge="1" parent="1" source="107" target="345">
+                <mxCell id="361" style="edgeStyle=none;html=1;exitX=0.539;exitY=-0.135;exitDx=0;exitDy=0;entryX=0.576;entryY=0.995;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=3;exitPerimeter=0;" parent="1" source="107" target="345" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="2167" y="-60"/>
@@ -299,12 +299,22 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="362" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=3;" edge="1" parent="1" source="107" target="358">
+                <mxCell id="369" value="BAD:(" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="361">
+                    <mxGeometry x="0.735" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="362" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=3;" parent="1" source="107" target="358" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="2150" y="-40"/>
                             <mxPoint x="890" y="-40"/>
                         </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="370" value="GOOD :)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="362">
+                    <mxGeometry x="0.8635" y="2" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="107" value="Step 3:State Merging" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=15;" parent="1" vertex="1">
@@ -919,7 +929,7 @@
                 <mxCell id="347" value="More Merging Fun - Alternative Version (&lt;span class=&quot;citation-204&quot;&gt;&lt;/span&gt;&lt;b data-index-in-node=&quot;37&quot; data-path-to-node=&quot;0,1&quot;&gt;not faithful&lt;/b&gt;&lt;span class=&quot;citation-204&quot;&gt;&lt;/span&gt;&amp;nbsp;)" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="1340" y="-1230" width="310" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="350" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="349">
+                <mxCell id="350" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="349" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="170" y="1450" as="targetPoint"/>
                         <Array as="points">
@@ -927,19 +937,19 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="349" value="$$A \wedge S \models \underbrace{(g(\vec{d}^{\text{pre}}) \rightarrow (v&#39; = \text{observed}))}_{G}$$&#xa;&#xa;Reformulate by adding the guard as a premise in each observation: &#xa;&#xa;$$G = \bigwedge_{k=1}^{m} \left( g(\vec{d}_k^{\text{pre}}) \wedge (v&#39; = e(\vec{d}_k^{\text{pre}})) \rightarrow (v&#39; = d_k^{\text{post}}[v]) \right)$$&#xa;&#xa;But since you already know \(g(\vec{d}_k^{\text{pre}}) = \top\) for all observations (they wouldn&#39;t have fired otherwise), this simplifies to just adding the guard as an assumption in the Z3 solver context.&#xa;&#xa;Where:&#xa;&#xa;- \(A\) = theory of LRA&#xa;- \(g(\vec{d}^{\text{pre}})\) = the guard evaluated on the pre-state&#xa;- \(v&#39; = e(\vec{d}^{\text{pre}})\) = the candidate update expression&#xa;- \(G\) = observed post-values&#xa;&#xa;Z3 (constraint): solver.add(guard_on_pre_state) &#xa;&#xa;(guard holds AND expression produces v’)→(v’ matches observation)&#xa;&#xa;&#xa;This reads: &quot;IF the guard is satisfied on the pre-state AND the candidate expression produces some value, THEN that value must match what we observed&quot;" style="text;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                <mxCell id="349" value="$$A \wedge S \models \underbrace{(g(\vec{d}^{\text{pre}}) \rightarrow (v&#39; = \text{observed}))}_{G}$$&#xa;&#xa;Reformulate by adding the guard as a premise in each observation: &#xa;&#xa;$$G = \bigwedge_{k=1}^{m} \left( g(\vec{d}_k^{\text{pre}}) \wedge (v&#39; = e(\vec{d}_k^{\text{pre}})) \rightarrow (v&#39; = d_k^{\text{post}}[v]) \right)$$&#xa;&#xa;But since you already know \(g(\vec{d}_k^{\text{pre}}) = \top\) for all observations (they wouldn&#39;t have fired otherwise), this simplifies to just adding the guard as an assumption in the Z3 solver context.&#xa;&#xa;Where:&#xa;&#xa;- \(A\) = theory of LRA&#xa;- \(g(\vec{d}^{\text{pre}})\) = the guard evaluated on the pre-state&#xa;- \(v&#39; = e(\vec{d}^{\text{pre}})\) = the candidate update expression&#xa;- \(G\) = observed post-values&#xa;&#xa;Z3 (constraint): solver.add(guard_on_pre_state) &#xa;&#xa;(guard holds AND expression produces v’)→(v’ matches observation)&#xa;&#xa;&#xa;This reads: &quot;IF the guard is satisfied on the pre-state AND the candidate expression produces some value, THEN that value must match what we observed&quot;" style="text;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
                     <mxGeometry x="-260" y="1429" width="370" height="521" as="geometry"/>
                 </mxCell>
-                <mxCell id="351" value="&quot;Given that the guard holds (which we know from the data), find an expression that explains the observations&quot;&lt;br&gt;" style="text;whiteSpace=wrap;html=1;align=center;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                <mxCell id="351" value="&quot;Given that the guard holds (which we know from the data), find an expression that explains the observations&quot;&lt;br&gt;" style="text;whiteSpace=wrap;html=1;align=center;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="-620" y="1390" width="180" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="352" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.007;entryY=0.057;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="351" target="349">
+                <mxCell id="352" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.007;entryY=0.057;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="351" target="349" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="354" value="Complete Example&#xa;&#xa;Suppose:&#xa;- Guard: \(g = (\text{counter} &gt; 5)\)&#xa;- Candidate expression: \(e = \text{counter} + 1\)&#xa;- Variable: \(v = \text{counter}\)&#xa;- Observation 1: pre = {counter: 10}, post = {counter: 11}&#xa;- Observation 2: pre = {counter: 8}, post = {counter: 9}&#xa;&#xa;Then \(G\) becomes:$$G = \underbrace{(10 &gt; 5) \wedge (v&#39; = 10 + 1) \rightarrow (v&#39; = 11)}_{\text{observation 1}} \wedge \underbrace{(8 &gt; 5) \wedge (v&#39; = 8 + 1) \rightarrow (v&#39; = 9)}_{\text{observation 2}}$$Simplifying:$$G = (\top \wedge (v&#39; = 11) \rightarrow (v&#39; = 11)) \wedge (\top \wedge (v&#39; = 9) \rightarrow (v&#39; = 9))$$Which evaluates to:$$G = (v&#39; = 11 \rightarrow v&#39; = 11) \wedge (v&#39; = 9 \rightarrow v&#39; = 9) = \top$$So the candidate expression counter + 1 satisfies the goal!" style="text;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                <mxCell id="354" value="Complete Example&#xa;&#xa;Suppose:&#xa;- Guard: \(g = (\text{counter} &gt; 5)\)&#xa;- Candidate expression: \(e = \text{counter} + 1\)&#xa;- Variable: \(v = \text{counter}\)&#xa;- Observation 1: pre = {counter: 10}, post = {counter: 11}&#xa;- Observation 2: pre = {counter: 8}, post = {counter: 9}&#xa;&#xa;Then \(G\) becomes:$$G = \underbrace{(10 &gt; 5) \wedge (v&#39; = 10 + 1) \rightarrow (v&#39; = 11)}_{\text{observation 1}} \wedge \underbrace{(8 &gt; 5) \wedge (v&#39; = 8 + 1) \rightarrow (v&#39; = 9)}_{\text{observation 2}}$$Simplifying:$$G = (\top \wedge (v&#39; = 11) \rightarrow (v&#39; = 11)) \wedge (\top \wedge (v&#39; = 9) \rightarrow (v&#39; = 9))$$Which evaluates to:$$G = (v&#39; = 11 \rightarrow v&#39; = 11) \wedge (v&#39; = 9 \rightarrow v&#39; = 9) = \top$$So the candidate expression counter + 1 satisfies the goal!" style="text;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
                     <mxGeometry x="-930" y="1555" width="530" height="370" as="geometry"/>
                 </mxCell>
-                <mxCell id="356" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.004;entryY=0.651;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="354" target="349">
+                <mxCell id="356" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.004;entryY=0.651;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="354" target="349" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="-330" y="1740"/>
@@ -947,19 +957,19 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="357" value="" style="group;" vertex="1" connectable="0" parent="1">
+                <mxCell id="357" value="" style="group;" parent="1" vertex="1" connectable="0">
                     <mxGeometry x="604" y="-770" width="570" height="450" as="geometry"/>
                 </mxCell>
-                <mxCell id="358" value="Given data sets for state A (AutoApprove) and state B (Review), MINT would follow these steps to determine if a merge is valid:&#xa;&#xa;&#xa;&#xa;Training Set Construction: MINT would first combine your observations into a single training set. For every data vector, the &quot;class&quot; or label would be the name of the subsequent event in the execution trace.&#xa;    - Data Set A: Vector \(d_1​={500,0}\) is mapped to a label, for example, approve.&#xa;    - Data Set B: Vector \(d_4={1200,0}\) is mapped to a label, for example, manual_review.&#xa;&#xa;&#xa;Classifier Inference: MINT infers a set of classifiers C, where each classifier \(C_σ​\) serves to predict the next event name in the trace&#xa;    - Inference: Using an algorithm like C4.5 (J48), it produces a decision procedure that maps variables to classes    &#xa;    - Example Rule: If \( amount \le 1000 \text{ then approve, else manual_review} \).&#xa;&#xa;Determinism Check: During the state merging process, MINT uses the equivalentTransitions function to compare the data vectors attached to transitions&#xa;&#xa;    - MINT Logic: A merge is permitted only if the inferred classifier c yields identical predictions for every data configuration \( c(x)==c(y) \) within the traces being compared&#xa;" style="rounded=1;whiteSpace=wrap;arcSize=3;fillColor=#d5e8d4;strokeColor=#82b366;align=left;" vertex="1" parent="357">
+                <mxCell id="358" value="Given data sets for state A (AutoApprove) and state B (Review), MINT would follow these steps to determine if a merge is valid:&#xa;&#xa;&#xa;&#xa;Training Set Construction: MINT would first combine your observations into a single training set. For every data vector, the &quot;class&quot; or label would be the name of the subsequent event in the execution trace.&#xa;    - Data Set A: Vector \(d_1​={500,0}\) is mapped to a label, for example, approve.&#xa;    - Data Set B: Vector \(d_4={1200,0}\) is mapped to a label, for example, manual_review.&#xa;&#xa;&#xa;Classifier Inference: MINT infers a set of classifiers C, where each classifier \(C_σ​\) serves to predict the next event name in the trace&#xa;    - Inference: Using an algorithm like C4.5 (J48), it produces a decision procedure that maps variables to classes    &#xa;    - Example Rule: If \( amount \le 1000 \text{ then approve, else manual_review} \).&#xa;&#xa;Determinism Check: During the state merging process, MINT uses the equivalentTransitions function to compare the data vectors attached to transitions&#xa;&#xa;    - MINT Logic: A merge is permitted only if the inferred classifier c yields identical predictions for every data configuration \( c(x)==c(y) \) within the traces being compared&#xa;" style="rounded=1;whiteSpace=wrap;arcSize=3;fillColor=#d5e8d4;strokeColor=#82b366;align=left;" parent="357" vertex="1">
                     <mxGeometry width="570" height="450" as="geometry"/>
                 </mxCell>
-                <mxCell id="360" value="&lt;span&gt;MINT Merging (&lt;span style=&quot;color: rgb(191, 199, 213); font-family: Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-weight: normal; white-space: pre;&quot;&gt;Walkinshaw et al&lt;/span&gt;):&amp;nbsp;&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="357">
+                <mxCell id="360" value="&lt;span&gt;MINT Merging (&lt;span style=&quot;color: rgb(191, 199, 213); font-family: Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; font-weight: normal; white-space: pre;&quot;&gt;Walkinshaw et al&lt;/span&gt;):&amp;nbsp;&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" parent="357" vertex="1">
                     <mxGeometry y="10" width="260" height="21.72" as="geometry"/>
                 </mxCell>
-                <mxCell id="366" value="Amongst the hundreds of different techniques, core techniques include Quinlan’s C4.5 Decision Trees inference algorithm [40], ensemble-learning approaches such as AdaBoost [19], and Bayesian inference techniques such as the simple naive Bayes approach [39].&#xa;&#xa; [40] Quinlan JR (1993) C4.5: Programs for Machine Learning. Morgan Kaufmann, San Mateo, CA&#xa;&#xa;[19] Freund Y, Schapire R (1995) A desicion-theoretic generalization of online learning and an application to boosting. In: Computational learning theory, Springer, pp 23–37&#xa;&#xa;[39] Mitchell T (1997) Machine Learning. McGraw-Hill" style="text;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                <mxCell id="366" value="Amongst the hundreds of different techniques, core techniques include Quinlan’s C4.5 Decision Trees inference algorithm [40], ensemble-learning approaches such as AdaBoost [19], and Bayesian inference techniques such as the simple naive Bayes approach [39].&#xa;&#xa; [40] Quinlan JR (1993) C4.5: Programs for Machine Learning. Morgan Kaufmann, San Mateo, CA&#xa;&#xa;[19] Freund Y, Schapire R (1995) A desicion-theoretic generalization of online learning and an application to boosting. In: Computational learning theory, Springer, pp 23–37&#xa;&#xa;[39] Mitchell T (1997) Machine Learning. McGraw-Hill" style="text;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="70" y="-690" width="406" height="225" as="geometry"/>
                 </mxCell>
-                <mxCell id="368" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.004;entryY=0.594;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="366" target="358">
+                <mxCell id="368" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.004;entryY=0.594;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="366" target="358" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
             </root>

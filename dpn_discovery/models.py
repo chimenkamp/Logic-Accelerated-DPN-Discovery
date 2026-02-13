@@ -10,9 +10,29 @@ Defines all core types from Section 2 of the specification:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import Enum, auto
 from typing import Any, Optional
 
 import z3
+
+
+# ---------------------------------------------------------------------------
+# Merge Strategy
+# ---------------------------------------------------------------------------
+
+class MergeStrategy(Enum):
+    """Controls which merging algorithm is used in Step 3.
+
+    NONE         – Skip merging entirely (return the PTA as-is).
+    BLUE_FRINGE  – Control-flow-only Blue-Fringe with EDSM scoring
+                   (Walkinshaw et al. 2013, Algorithm 1 & 2).
+    MINT         – Blue-Fringe + data-aware classifiers
+                   (Walkinshaw et al. 2013, Algorithm 3 — MINT).
+    """
+
+    NONE = auto()
+    BLUE_FRINGE = auto()
+    MINT = auto()
 
 
 # ---------------------------------------------------------------------------

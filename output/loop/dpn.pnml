@@ -10,19 +10,9 @@
           <text>1</text>
         </initialMarking>
       </place>
-      <place id="p_q1">
-        <name>
-          <text>p_q1</text>
-        </name>
-      </place>
       <place id="p_q19">
         <name>
           <text>p_q19</text>
-        </name>
-      </place>
-      <place id="p_q2">
-        <name>
-          <text>p_q2</text>
         </name>
       </place>
       <transition id="t_T1_1">
@@ -38,7 +28,7 @@
         </toolspecific>
       </transition>
       <arc id="arc_p_q0_to_t_T1_1" source="p_q0" target="t_T1_1" />
-      <arc id="arc_t_T1_1_to_p_q1" source="t_T1_1" target="p_q1" />
+      <arc id="arc_t_T1_1_to_p_q0" source="t_T1_1" target="p_q0" />
       <transition id="t_T2_2">
         <name>
           <text>T2</text>
@@ -50,8 +40,8 @@
           <update variable="x">1 + x</update>
         </toolspecific>
       </transition>
-      <arc id="arc_p_q1_to_t_T2_2" source="p_q1" target="t_T2_2" />
-      <arc id="arc_t_T2_2_to_p_q2" source="t_T2_2" target="p_q2" />
+      <arc id="arc_p_q0_to_t_T2_2" source="p_q0" target="t_T2_2" />
+      <arc id="arc_t_T2_2_to_p_q0" source="t_T2_2" target="p_q0" />
       <transition id="t_T4_3">
         <name>
           <text>T4</text>
@@ -63,8 +53,8 @@
           <update variable="y">x</update>
         </toolspecific>
       </transition>
-      <arc id="arc_p_q2_to_t_T4_3" source="p_q2" target="t_T4_3" />
-      <arc id="arc_t_T4_3_to_p_q1" source="t_T4_3" target="p_q1" />
+      <arc id="arc_p_q0_to_t_T4_3" source="p_q0" target="t_T4_3" />
+      <arc id="arc_t_T4_3_to_p_q0" source="t_T4_3" target="p_q0" />
       <transition id="t_T3_4">
         <name>
           <text>T3</text>
@@ -73,7 +63,7 @@
           <guard>True</guard>
         </toolspecific>
       </transition>
-      <arc id="arc_p_q2_to_t_T3_4" source="p_q2" target="t_T3_4" />
+      <arc id="arc_p_q0_to_t_T3_4" source="p_q0" target="t_T3_4" />
       <arc id="arc_t_T3_4_to_p_q19" source="t_T3_4" target="p_q19" />
     </page>
     <toolspecific tool="dpn-discovery" version="1.0">

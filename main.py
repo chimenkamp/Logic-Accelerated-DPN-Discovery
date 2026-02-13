@@ -109,7 +109,7 @@ if __name__ == "__main__":
     settings = VisualizerSettings(output_format="png", rankdir="LR")
     viz = DPNVisualizer(settings)
 
-    # for tc in TEST_CASES:
-    #     run_on_log(tc)
+    for tc in TEST_CASES:
+        run_on_log(tc)
 
-    run_on_log(sepsis_log)
+    # run_on_log(sepsis_log)

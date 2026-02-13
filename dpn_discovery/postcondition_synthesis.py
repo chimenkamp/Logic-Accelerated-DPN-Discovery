@@ -26,12 +26,15 @@ Reference
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any
 
 import z3
 
 from dpn_discovery.models import EFSM, Transition
+
+logger = logging.getLogger(__name__)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -214,10 +217,98 @@ def _deduplicate_pairs(
     return unique
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# 4b.  Symbolic guard-based candidate pruning
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _is_trivial_guard(guard: z3.BoolRef | None) -> bool:
+    """Return True if *guard* is ``None`` or syntactically ``True``.
+
+    A trivial guard provides no symbolic constraints, so pruning
+    would yield no benefit.
+    """
+    if guard is None:
+        return True
+    return z3.is_true(z3.simplify(guard))
+
+
+def _are_equivalent_under_guard(
+    e1: ExprNode,
+    e2: ExprNode,
+    guard: z3.BoolRef,
+    variables: list[str],
+    timeout_ms: int = 500,
+) -> bool:
+    """Check whether *e1* and *e2* produce identical values whenever *guard* holds.
+
+    Formally, returns ``True`` iff:
+
+        ¬( g(V) → e₁(V) = e₂(V) )  is UNSAT
+
+    i.e.  g(V) ⊨ e₁(V) = e₂(V).
+    """
+    z3_vars = {v: z3.Real(v) for v in variables}
+    expr1 = e1.to_z3(z3_vars)
+    expr2 = e2.to_z3(z3_vars)
+
+    solver = z3.Solver()
+    solver.set("timeout", timeout_ms)
+
+    # Assert: guard holds AND the two expressions differ.
+    # If UNSAT → they are always equal under the guard.
+    solver.add(guard)
+    solver.add(expr1 != expr2)
+
+    return solver.check() == z3.unsat
+
+
+def _prune_candidates_with_guard(
+    candidates: list[ExprNode],
+    guard: z3.BoolRef,
+    variables: list[str],
+) -> list[ExprNode]:
+    """Remove candidates that are equivalent under *guard* to an earlier one.
+
+    Iterates *candidates* in order (assumed size-increasing) and keeps
+    only the **first representative** of each equivalence class.  Two
+    candidates belong to the same class iff they produce identical
+    output values whenever the guard holds.
+
+    This leverages the synthesised guard as symbolic background
+    knowledge to collapse the search space before the expensive
+    per-observation consistency checks.
+    """
+    kept: list[ExprNode] = []
+
+    for candidate in candidates:
+        is_redundant = False
+        for representative in kept:
+            if _are_equivalent_under_guard(
+                candidate, representative, guard, variables
+            ):
+                is_redundant = True
+                break
+        if not is_redundant:
+            kept.append(candidate)
+
+    n_pruned = len(candidates) - len(kept)
+    if n_pruned > 0:
+        logger.debug(
+            "Symbolic pruning: %d / %d candidates removed (guard: %s)",
+            n_pruned,
+            len(candidates),
+            guard,
+        )
+
+    return kept
+
+
 def _get_abduct_ucl(
     var: str,
     pre_post_pairs: list[tuple[dict[str, Any], dict[str, Any]]],
     variables: list[str],
+    guard_formula: z3.BoolRef | None = None,
+    use_symbolic_pruning: bool = False,
 ) -> ExprNode | None:
     """Enumerative abduction (GetAbductUCL, Reynolds et al. §4).
 
@@ -245,6 +336,16 @@ def _get_abduct_ucl(
     unique_pairs = _deduplicate_pairs(var, pre_post_pairs, variables)
 
     candidates = _enumerate_candidates(variables, max_depth=2)
+
+    # ── Symbolic pruning (optional) ──────────────────────────────────
+    # When enabled and a non-trivial guard is available, collapse
+    # candidates that are equivalent under the guard into a single
+    # representative.  This reduces the number of expensive
+    # per-observation Z3 checks.
+    if use_symbolic_pruning and not _is_trivial_guard(guard_formula):
+        candidates = _prune_candidates_with_guard(
+            candidates, guard_formula, variables  # type: ignore[arg-type]
+        )
 
     for candidate in candidates:
         # Build Z3 constraints.
@@ -329,7 +430,10 @@ def _collect_pre_post_pairs(
     return pairs
 
 
-def synthesise_postconditions(efsm: EFSM) -> EFSM:
+def synthesise_postconditions(
+    efsm: EFSM,
+    use_symbolic_pruning: bool = False,
+) -> EFSM:
     """Annotate every transition in *efsm* with update rules.
 
     Strategy (per specification §4 Step 5):
@@ -340,6 +444,18 @@ def synthesise_postconditions(efsm: EFSM) -> EFSM:
     Pre/post observation pairs are stored directly on each
     transition (populated during PTA construction and preserved
     through state merging).
+
+    Parameters
+    ----------
+    efsm : EFSM
+        The EFSM with guard formulas already populated (Step 4).
+    use_symbolic_pruning : bool
+        When ``True``, use the transition's guard formula to
+        symbolically prune equivalent update-expression candidates
+        before checking them against observations.  This can
+        significantly reduce the search space when guards impose
+        non-trivial constraints on the input variables.  Default
+        is ``False`` (original behaviour).
 
     Returns a **new** EFSM with ``update_rule`` populated.
     """
@@ -362,7 +478,13 @@ def synthesise_postconditions(efsm: EFSM) -> EFSM:
             #     continue
 
             # Attempt 2: GetAbductUCL (Reynolds et al.)
-            abduct = _get_abduct_ucl(var, pre_post_pairs, variables)
+            abduct = _get_abduct_ucl(
+                var,
+                pre_post_pairs,
+                variables,
+                guard_formula=transition.guard_formula,
+                use_symbolic_pruning=use_symbolic_pruning,
+            )
             if abduct is not None:
                 z3_vars = {v: z3.Real(v) for v in variables}
                 update_rule[var] = abduct.to_z3(z3_vars)
