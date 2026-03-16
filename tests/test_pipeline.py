@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import z3
+from dpn_discovery.smt import get_solver
 
 from dpn_discovery.dpn_transform import dpn_to_pnml, efsm_to_dpn, verify_dpn
 from dpn_discovery.guard_synthesis import synthesise_guards
@@ -133,8 +133,9 @@ class TestGuardSynthesis:
         pta = build_pta(log)
         merged = run_state_merging(pta)
         guarded = synthesise_guards(merged)
+        smt = get_solver()
         for t in guarded.transitions:
-            assert isinstance(t.guard_formula, z3.BoolRef)
+            assert smt.is_bool_expr(t.guard_formula)
 
 
 # ═══════════════════════════════════════════════════════════════════════════

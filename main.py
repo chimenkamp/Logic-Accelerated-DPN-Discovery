@@ -10,12 +10,16 @@ against the reference petri-net.png in each data folder.
 import logging
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 
 from dpn_discovery.dpn_transform import dpn_to_pnml
 from dpn_discovery.models import EFSM, DataPetriNet
 from dpn_discovery.pipeline import run_pipeline_full
+from dpn_discovery.smt import get_solver, set_solver
+from dpn_discovery.smt.yices2_solver import Yices2SMTSolver
+from dpn_discovery.smt.yices2_solver import Yices2SMTSolver
 from dpn_discovery.visualization import DPNVisualizer, VisualizerSettings
 
 DATAPATH = Path(__file__).resolve().parent / "data"
@@ -26,6 +30,8 @@ class TestCase:
     name: str
     csv_path: Path
     ref_png: Path
+
+    sample_ratio: Optional[float] = None
 
 
 TEST_CASES: list[TestCase] = [
@@ -54,18 +60,18 @@ def _print_model_summary(name: str, pta: EFSM, efsm: EFSM, dpn: DataPetriNet) ->
     print()
 
     print("  Transitions:")
+    smt = get_solver()
     for t in dpn.transitions:
         activity = t.name
         if activity.startswith("t_"):
             parts = activity[2:].rsplit("_", 1)
             activity = parts[0] if len(parts) == 2 and parts[1].isdigit() else activity[2:]
 
-        guard_str = str(t.guard) if t.guard is not None else "True"
+        guard_str = smt.expr_to_string(t.guard) if t.guard is not None else "True"
         print(f"    {activity:20s}  guard = {guard_str}")
-
         if t.update_rule:
             for var, expr in sorted(t.update_rule.items()):
-                print(f"    {'':20s}  {var}' := {expr}")
+                print(f"    {'':20s}  {var}' := {smt.expr_to_string(expr)}")
         print()
 
     print(sep)
@@ -78,7 +84,7 @@ def run_on_log(tc: TestCase) -> None:
     logger.info("=" * 60)
 
     # Run the full discovery pipeline.
-    pta, efsm, dpn = run_pipeline_full(str(tc.csv_path), case_sampling_ratio=0.2)
+    pta, efsm, dpn = run_pipeline_full(str(tc.csv_path), case_sampling_ratio=tc.sample_ratio)
 
     # Print model summary for manual comparison.
     _print_model_summary(tc.name, pta, efsm, dpn)
@@ -103,13 +109,16 @@ def run_on_log(tc: TestCase) -> None:
     logger.info("")
 
 
-sepsis_log = TestCase("Sepsis", Path("/Users/christianimenkamp/Documents/Data-Repository/Community/sepsis/Sepsis Cases - Event Log.xes"), DATAPATH / "sepsis/petri-net.png")
+sepsis_log = TestCase("Sepsis", Path("/Users/christianimenkamp/Documents/Data-Repository/Community/sepsis/Sepsis Cases - Event Log.xes"), DATAPATH / "sepsis/petri-net.png", sample_ratio=0.05)
+road_fine = TestCase("Road Fine", Path("/Users/christianimenkamp/Documents/Data-Repository/Community/Road-Traffic-Fine-Management-Process/Road_Traffic_Fine_Management_Process.xes"), DATAPATH / "road_fine/petri-net.png", sample_ratio=0.05)
 
 if __name__ == "__main__":
     settings = VisualizerSettings(output_format="png", rankdir="LR")
     viz = DPNVisualizer(settings)
+    
+    set_solver(Yices2SMTSolver())
 
-    for tc in TEST_CASES:
-        run_on_log(tc)
+    run_on_log(road_fine)
+
 
     # run_on_log(sepsis_log)

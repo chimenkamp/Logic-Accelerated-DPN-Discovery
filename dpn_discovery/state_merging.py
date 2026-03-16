@@ -4,27 +4,44 @@ Step 3 — State Merging  (Walkinshaw et al., 2013).
 Implements **two** merging strategies from the paper:
 
   • **Blue-Fringe** (Algorithms 1 & 2) — control-flow-only merging
-    with Evidence-Driven State-Merging (EDSM) scoring.
-  • **MINT** (Algorithm 3) — Blue-Fringe extended with trained data
-    classifiers for transition equivalence, non-determinism
-    resolution, and post-merge consistency validation.
+    with Evidence-Driven State-Merging (EDSM) scoring.  Non-
+    determinism is resolved **globally** (Algorithm 1, line 11:
+    ``findNonDeterminism(S, T)``).
+  • **MINT** (Algorithm 3) — Blue-Fringe scoring extended with
+    trained data classifiers for transition equivalence and post-
+    merge consistency validation.  Non-determinism is resolved
+    **locally** at the merge target using
+    ``equivalentTransitions`` with classifiers, cascading
+    downward recursively.
+
+When MINT is selected it runs directly on the PTA — it is a
+**self-contained** merging algorithm that replaces Blue-Fringe,
+not a post-processing step on top of it.
+
+After merging, a **structural deduplication** pass merges any
+remaining states whose outgoing transition signatures are
+identical, ensuring the resulting DPN has no redundant places.
 
 Both strategies maintain the red/blue colouring scheme.  At each
 iteration, *all* (red, blue) candidate pairs are scored; the pair
 with the **highest EDSM score** (≥ *k*) is selected.  If no pair
 meets the threshold, the blue candidate is promoted to red.
 
-Key differences from the previous implementation
--------------------------------------------------
-  • Removed the Z3-based linear-hyperplane separability check.
-  • Added EDSM scoring (``_compute_edsm_score``).
-  • Added classifier-based transition equivalence
-    (``_equivalent_transitions``).
-  • Added recursive non-determinism resolution inside merge.
-  • Added post-merge ``_is_consistent`` validation (MINT only).
-  • Added a ``Failed`` set to skip rejected merge pairs.
-  • Added ``MergeStrategy`` enum support: ``NONE`` / ``BLUE_FRINGE``
-    / ``MINT``.
+Key design decisions aligned with the paper
+--------------------------------------------
+  • **No accept/non-accept incompatibility** — the paper
+    explicitly considers only positive traces (§3.1).  Blocking
+    merges between accepting and non-accepting states would
+    prevent leaf-to-intermediate merges, leaving the model
+    unnecessarily large.
+  • EDSM scoring (``_compute_edsm_score``) only counts
+    classifier-equivalent transitions in MINT mode (Algorithm 3,
+    lines 26–33).
+  • Recursive non-determinism resolution inside merge
+    (Algorithm 3, lines 19–24).
+  • Post-merge ``_is_consistent`` validation (MINT only,
+    Algorithm 3, line 7).
+  • ``Failed`` set to skip rejected merge pairs.
 
 Reference
 ---------
@@ -96,7 +113,61 @@ def run_state_merging(
                 "an ordered variables list."
             )
 
-    efsm = pta.deep_copy()
+        # MINT (Algorithm 3): uses Blue-Fringe scoring but adds
+        # data-aware merge validation (equivalentTransitions +
+        # isConsistent).  This REPLACES Blue-Fringe rather than
+        # running after it — Algorithm 3 is a self-contained
+        # merging procedure.
+        logger.info("  MINT merging (data-aware, Algorithm 3)")
+        efsm = _run_merge_loop(
+            pta.deep_copy(), MergeStrategy.MINT, classifiers, variables, k,
+        )
+    else:
+        # Blue-Fringe only (Algorithms 1 & 2).
+        efsm = _run_merge_loop(
+            pta.deep_copy(), strategy, None, None, k,
+        )
+
+    # Final pass — merge structurally equivalent states so that
+    # the resulting DPN has no duplicate places for the same
+    # activity pattern.
+    before = len(efsm.states)
+    efsm = _deduplicate_states(efsm)
+    if len(efsm.states) < before:
+        logger.info(
+            "  Dedup: %d → %d states", before, len(efsm.states),
+        )
+
+    return efsm
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Core merge loop  (Blue-Fringe / MINT)
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _run_merge_loop(
+    efsm: EFSM,
+    strategy: MergeStrategy,
+    classifiers: Classifiers | None,
+    variables: list[str] | None,
+    k: int,
+) -> EFSM:
+    """Execute a single Blue-Fringe / MINT merge pass.
+
+    This is the inner loop of Algorithm 1 (Blue-Fringe) or
+    Algorithm 3 (MINT) from Walkinshaw et al. (2013).
+
+    Parameters
+    ----------
+    efsm : EFSM
+        The current machine (modified in place and returned).
+    strategy : MergeStrategy
+        BLUE_FRINGE or MINT.
+    classifiers / variables :
+        Required only for MINT.
+    k : int
+        Minimum EDSM score for a merge.
+    """
     vars_map = _build_vars_map(efsm)
     failed: set[tuple[str, str]] = set()
 
@@ -105,7 +176,23 @@ def run_state_merging(
         sorted(_direct_successors(efsm, efsm.initial_state) - red)
     )
 
+    initial_states = len(efsm.states)
+    merges_done = 0
+    iterations = 0
+
+    # Cache the inconsistency count so we only recompute after a
+    # successful merge (not after every failed attempt).
+    cached_incon: int | None = None
+
     while blue:
+        iterations += 1
+        if iterations % 50 == 0:
+            logger.info(
+                "    merge loop: iter=%d  |red|=%d  |blue|=%d  "
+                "states=%d  merges=%d  failed=%d",
+                iterations, len(red), len(blue),
+                len(efsm.states), merges_done, len(failed),
+            )
         candidate = blue.popleft()
         if candidate not in efsm.states:
             continue
@@ -123,9 +210,6 @@ def run_state_merging(
 
             score = _compute_edsm_score(
                 efsm, target, candidate,
-                classifiers=classifiers,
-                variables=variables,
-                strategy=strategy,
             )
             if score > best_score:
                 best_score = score
@@ -137,6 +221,13 @@ def run_state_merging(
             backup = efsm.deep_copy()
             backup_vars = dict(vars_map)
 
+            # For MINT: use cached pre-merge inconsistency count.
+            if strategy is MergeStrategy.MINT and cached_incon is None:
+                cached_incon = _count_inconsistencies(
+                    efsm, classifiers, variables, vars_map,  # type: ignore[arg-type]
+                )
+            pre_incon = cached_incon if strategy is MergeStrategy.MINT else 0
+
             efsm, vars_map = _merge_states(
                 efsm, best_target, candidate, vars_map,
                 classifiers=classifiers,
@@ -145,26 +236,41 @@ def run_state_merging(
             )
 
             # MINT post-merge consistency check (Algorithm 3, line 7).
+            # A merge is rejected only if it INCREASES the number of
+            # classifier mismatches.  The PTA itself may already
+            # contain mismatches (classifiers are imperfect), so
+            # demanding zero mismatches would block all merges.
             if strategy is MergeStrategy.MINT:
-                if not _is_consistent(efsm, classifiers, variables, vars_map):  # type: ignore[arg-type]
-                    # Reject merge.
+                post_incon = _count_inconsistencies(
+                    efsm, classifiers, variables, vars_map,  # type: ignore[arg-type]
+                )
+                if post_incon > pre_incon:
                     logger.debug(
-                        "Merge %s ← %s rejected (inconsistent)",
-                        best_target, candidate,
+                        "Merge %s \u2190 %s (score=%d) REJECTED "
+                        "(inconsistencies %d → %d)",
+                        best_target, candidate, best_score,
+                        pre_incon, post_incon,
                     )
                     failed.add(_canon(best_target, candidate))
                     efsm = backup
                     vars_map = backup_vars
                 else:
                     merged = True
+                    # Update cached count for next iteration.
+                    cached_incon = post_incon
             else:
                 merged = True
 
             if merged:
+                merges_done += 1
                 logger.debug(
-                    "Merged %s ← %s  (score=%d)", best_target, candidate, best_score
+                    "Merged %s \u2190 %s  (score=%d)",
+                    best_target, candidate, best_score,
                 )
-                # Recalculate the blue frontier.
+                # Purge stale red entries (some red states may have
+                # been removed by cascading non-determinism merges)
+                # and recalculate the blue frontier.
+                red = {s for s in red if s in efsm.states}
                 blue = deque(sorted(
                     s for s in _all_successors_of_set(efsm, red) - red
                     if s in efsm.states
@@ -175,6 +281,11 @@ def run_state_merging(
             new_blue = _direct_successors(efsm, candidate) - red - set(blue)
             blue.extend(sorted(new_blue))
 
+    logger.info(
+        "  Merge loop done: %d iterations, %d merges, "
+        "%d → %d states",
+        iterations, merges_done, initial_states, len(efsm.states),
+    )
     return efsm
 
 
@@ -187,23 +298,23 @@ def _compute_edsm_score(
     s1: str,
     s2: str,
     *,
-    classifiers: Classifiers | None,
-    variables: list[str] | None,
-    strategy: MergeStrategy,
     _visited: set[tuple[str, str]] | None = None,
 ) -> int:
     """Recursively compute the EDSM compatibility score for merging
     *s1* and *s2*.
 
     The score counts the number of outgoing-transition pairs that
-    share the same label (and in MINT mode, produce the same
-    classifier predictions for all attached data).
+    share the same activity label and recurses into their
+    successor states.
 
     A return value of ``-1`` signals incompatibility (merging
     would produce a contradiction).
 
     Corresponds to ``calculateScore`` in Algorithm 2 of
-    Walkinshaw et al. (2013).
+    Walkinshaw et al. (2013).  The score is **strategy-agnostic**
+    — classifiers are NOT used here.  They are only consulted
+    during the merge operation itself (Algorithm 3:
+    ``equivalentTransitions`` + ``isConsistent``).
     """
     if _visited is None:
         _visited = set()
@@ -213,9 +324,12 @@ def _compute_edsm_score(
         return 0
     _visited.add(pair)
 
-    # Accept / non-accept clash → incompatible.
-    if (s1 in efsm.accepting_states) != (s2 in efsm.accepting_states):
-        return -1
+    # NOTE: No accept / non-accept incompatibility check.
+    # Walkinshaw et al. (2013) explicitly state that only positive
+    # traces are considered (§3.1).  Blocking merges between
+    # accepting and non-accepting states would prevent the merging
+    # of leaf nodes (end of trace) with intermediate nodes, leaving
+    # the model unnecessarily large.
 
     out1 = _group_by_activity(efsm, s1)
     out2 = _group_by_activity(efsm, s2)
@@ -227,22 +341,8 @@ def _compute_edsm_score(
         ts1 = out1[activity]
         ts2 = out2[activity]
 
-        if strategy is MergeStrategy.MINT and classifiers and variables:
-            # In MINT mode, transitions on the same label are only
-            # "matching" if the classifier gives the same predictions
-            # for all their data.
-            if _transitions_classifier_equivalent(
-                ts1, ts2, activity, classifiers, variables
-            ):
-                score += 1
-            else:
-                # Classifier distinguishes them — they are
-                # data-deterministic and do NOT need merging.
-                # This is fine, not incompatible.
-                score += 1
-        else:
-            # Blue-Fringe (CF only): transitions match by label.
-            score += 1
+        # Algorithm 2: any shared label contributes +1.
+        score += 1
 
         # Recurse into successor states.
         targets1 = sorted({t.target_id for t in ts1})
@@ -251,9 +351,6 @@ def _compute_edsm_score(
             if t1 != t2:
                 sub = _compute_edsm_score(
                     efsm, t1, t2,
-                    classifiers=classifiers,
-                    variables=variables,
-                    strategy=strategy,
                     _visited=_visited,
                 )
                 if sub < 0:
@@ -264,30 +361,21 @@ def _compute_edsm_score(
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Merge + recursive non-determinism resolution  (Algorithm 3, lines 14–25)
+# Merge + non-determinism resolution  (Algorithms 1 & 3)
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _merge_states(
+def _redirect_edges(
     efsm: EFSM,
     keep: str,
     remove: str,
     vars_map: Vars,
-    *,
-    classifiers: Classifiers | None,
-    variables: list[str] | None,
-    strategy: MergeStrategy,
 ) -> tuple[EFSM, Vars]:
-    """Merge *remove* into *keep*, then recursively resolve
-    non-determinism.
+    """Redirect all edges from/to *remove* to *keep* and de-duplicate.
 
-    In Blue-Fringe mode, non-determinism is detected by label only.
-    In MINT mode, ``_equivalent_transitions`` uses classifiers to
-    decide whether two same-label transitions are distinguishable
-    by data (Algorithm 3, lines 26–33).
-
-    Returns the updated ``(efsm, vars_map)``.
+    This is the pure structural merge — it does NOT resolve any
+    non-determinism.  The caller is responsible for calling the
+    appropriate resolution strategy afterwards.
     """
-    # --- Redirect all edges from *remove* to *keep* -----------------------
     new_transitions: list[Transition] = []
 
     for t in efsm.transitions:
@@ -339,40 +427,115 @@ def _merge_states(
         transitions=new_transitions,
         accepting_states=new_accepting,
     )
-
-    # --- Recursive non-determinism resolution (findNonDeterminism) --------
-    efsm, vars_map = _resolve_non_determinism(
-        efsm, keep, vars_map,
-        classifiers=classifiers,
-        variables=variables,
-        strategy=strategy,
-    )
-
     return efsm, vars_map
 
 
-def _resolve_non_determinism(
+def _merge_states(
     efsm: EFSM,
-    state: str,
+    keep: str,
+    remove: str,
     vars_map: Vars,
     *,
     classifiers: Classifiers | None,
     variables: list[str] | None,
     strategy: MergeStrategy,
+) -> tuple[EFSM, Vars]:
+    """Merge *remove* into *keep*, then resolve non-determinism.
+
+    In **Blue-Fringe** mode (Algorithm 1), non-determinism is
+    resolved **globally** via ``findNonDeterminism(S, T)`` — we
+    scan ALL states for same-label transitions to different
+    targets and merge those targets, looping to a fixpoint.
+
+    In **MINT** mode (Algorithm 3, lines 19–24),
+    ``equivalentTransitions`` only checks outgoing transitions
+    of the keep-state, cascading downward recursively.
+
+    Returns the updated ``(efsm, vars_map)``.
+    """
+    efsm, vars_map = _redirect_edges(efsm, keep, remove, vars_map)
+
+    if strategy is MergeStrategy.MINT and classifiers and variables:
+        # Algorithm 3: local resolution at keep, cascading downward.
+        efsm, vars_map = _resolve_non_determinism_local(
+            efsm, keep, vars_map,
+            classifiers=classifiers,
+            variables=variables,
+            strategy=strategy,
+        )
+    else:
+        # Algorithm 1: global fixpoint resolution.
+        efsm, vars_map = _resolve_non_determinism_global(
+            efsm, vars_map,
+        )
+
+    return efsm, vars_map
+
+
+# -----------------------------------------------------------------------
+# Algorithm 1 — global non-determinism resolution (findNonDeterminism)
+# -----------------------------------------------------------------------
+
+def _find_any_non_determinism(efsm: EFSM) -> tuple[str, str] | None:
+    """Scan the entire EFSM for a non-deterministic transition pair.
+
+    Returns ``(keep_target, remove_target)`` — the two distinct
+    targets of same-label transitions from the same source state.
+    Returns ``None`` when the EFSM is deterministic.
+    """
+    for state_id in sorted(efsm.states):
+        groups = _group_by_activity(efsm, state_id)
+        for activity in sorted(groups):
+            targets = sorted({t.target_id for t in groups[activity]})
+            if len(targets) >= 2:
+                return (targets[0], targets[1])
+    return None
+
+
+def _resolve_non_determinism_global(
+    efsm: EFSM,
+    vars_map: Vars,
+) -> tuple[EFSM, Vars]:
+    """Algorithm 1 fixpoint: find and merge ALL non-deterministic
+    transition targets until the machine is deterministic.
+
+    Each iteration finds one pair of targets that share the same
+    source state and label, redirects edges to merge them, and
+    repeats.  Because every merge reduces the state count by one,
+    the loop always terminates.
+    """
+    while True:
+        pair = _find_any_non_determinism(efsm)
+        if pair is None:
+            break
+        keep_t, remove_t = pair
+        if remove_t not in efsm.states:
+            continue
+        efsm, vars_map = _redirect_edges(efsm, keep_t, remove_t, vars_map)
+    return efsm, vars_map
+
+
+# -----------------------------------------------------------------------
+# Algorithm 3 — local non-determinism resolution (equivalentTransitions)
+# -----------------------------------------------------------------------
+
+def _resolve_non_determinism_local(
+    efsm: EFSM,
+    state: str,
+    vars_map: Vars,
+    *,
+    classifiers: Classifiers,
+    variables: list[str],
+    strategy: MergeStrategy,
     _visited: set[str] | None = None,
 ) -> tuple[EFSM, Vars]:
-    """Recursively merge non-deterministic successor states.
+    """Resolve non-determinism at *state* only, cascading downward.
 
-    For each activity leaving *state*, if there are ≥ 2 transitions
-    going to **different** targets that are considered *equivalent*,
-    merge those targets.
-
-    In Blue-Fringe mode, any two transitions with the same label to
-    different targets are non-deterministic and must be merged.
-    In MINT mode, ``equivalentTransitions`` (Algorithm 3, lines
-    26–33) uses classifiers to decide — transitions whose data
-    produces different classifier predictions are already
-    data-deterministic and left alone.
+    MINT mode (Algorithm 3, lines 19–24): for each activity leaving
+    *state*, group transitions by classifier equivalence and merge
+    the targets within each equivalence class.  Merging is
+    recursive so non-determinism at the merged targets is also
+    resolved (cascading downward through the graph).
     """
     if _visited is None:
         _visited = set()
@@ -392,14 +555,10 @@ def _resolve_non_determinism(
         if len(targets) <= 1:
             continue
 
-        if strategy is MergeStrategy.MINT and classifiers and variables:
-            # Group targets into equivalence classes using classifiers.
-            merge_groups = _find_equivalent_target_groups(
-                target_map, activity, classifiers, variables,
-            )
-        else:
-            # Blue-Fringe: all same-label targets must be merged.
-            merge_groups = [targets]
+        # Group targets into equivalence classes using classifiers.
+        merge_groups = _find_equivalent_target_groups(
+            target_map, activity, classifiers, variables,
+        )
 
         for group in merge_groups:
             if len(group) <= 1:
@@ -542,6 +701,38 @@ def _is_consistent(
     return True
 
 
+def _count_inconsistencies(
+    efsm: EFSM,
+    classifiers: Classifiers,
+    variables: list[str],
+    vars_map: Vars,
+) -> int:
+    """Count the number of data-sample/classifier mismatches.
+
+    Used to compare consistency before and after a merge: a merge
+    is rejected only if it **increases** the mismatch count (i.e.
+    makes the model worse).  This is necessary because classifiers
+    are imperfect approximations and the PTA itself may already
+    contain mismatches.
+    """
+    count = 0
+    for t in efsm.transitions:
+        target_activities = {
+            out.activity for out in efsm.outgoing(t.target_id)
+        }
+        if not target_activities and t.target_id in efsm.accepting_states:
+            continue
+        for data in t.data_samples:
+            predicted = predict_next_label(
+                classifiers, t.activity, data, variables,
+            )
+            if predicted is None:
+                continue
+            if target_activities and predicted not in target_activities:
+                count += 1
+    return count
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Vars-map construction
 # ═══════════════════════════════════════════════════════════════════════════
@@ -584,3 +775,207 @@ def _all_successors_of_set(efsm: EFSM, states: set[str]) -> set[str]:
     for s in states:
         result |= _direct_successors(efsm, s)
     return result
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Post-merge activity-based state deduplication
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _deduplicate_states(efsm: EFSM) -> EFSM:
+    """Merge states with identical outgoing transition signatures.
+
+    Two states are considered duplicates if they have exactly the
+    same set of ``(activity, target_state)`` pairs on their outgoing
+    transitions.  Merging such states ensures that the resulting DPN
+    has no redundant places for the same activity pattern.
+
+    The pass iterates to a fixpoint because merging two states may
+    make other states equivalent.
+    """
+    changed = True
+    while changed:
+        changed = False
+        sig_map: dict[frozenset[tuple[str, str]], list[str]] = {}
+        for state in sorted(efsm.states):
+            if state == efsm.initial_state:
+                continue
+            sig = frozenset(
+                (t.activity, t.target_id)
+                for t in efsm.transitions
+                if t.source_id == state
+            )
+            sig_map.setdefault(sig, []).append(state)
+
+        for group in sig_map.values():
+            if len(group) <= 1:
+                continue
+            keep = group[0]
+            for remove in group[1:]:
+                if remove not in efsm.states:
+                    continue
+                efsm = _simple_merge(efsm, keep, remove)
+                changed = True
+
+    return efsm
+
+
+def bisimulation_reduction(efsm: EFSM) -> EFSM:
+    """Compute the coarsest bisimulation quotient of *efsm*.
+
+    Two states are *bisimilar* iff they have the same set of
+    outgoing activity labels AND each label leads to bisimilar
+    successors.  This is strictly stronger than the existing
+    ``_deduplicate_states`` which only checks one level of
+    outgoing ``(activity, target_id)`` pairs.
+
+    Algorithm — partition-refinement (Kanellakis–Smolka):
+      1. Start with a single partition block containing all states.
+      2. Refine: split each block so that states in the same sub-
+         block have identical ``{activity → block-of-target}``
+         signatures.
+      3. Iterate to fixpoint (no block changes between iterations).
+      4. For each block with >1 state, merge all states into a
+         single representative via ``_simple_merge``.
+
+    This is purely language-preserving — it never introduces
+    assumptions beyond what the EFSM already encodes.
+
+    Parameters
+    ----------
+    efsm : EFSM
+        The EFSM to reduce (not modified; returns a deep copy).
+
+    Returns
+    -------
+    EFSM
+        The reduced EFSM.  Structurally smaller or equal.
+    """
+    efsm = efsm.deep_copy()
+    states = sorted(efsm.states)
+
+    if len(states) <= 1:
+        return efsm
+
+    # ── 1. Initial partition: all states in one block ────────────────────
+    # We keep the initial state distinguishable from the start so it
+    # never gets merged away.
+    block_of: dict[str, int] = {}
+    block_id = 0
+    # Separate initial state into its own block.
+    block_of[efsm.initial_state] = block_id
+    block_id += 1
+    for s in states:
+        if s != efsm.initial_state:
+            block_of[s] = block_id
+    block_id += 1
+
+    # ── 2. Partition-refinement loop ─────────────────────────────────────
+    # Pre-compute outgoing transitions grouped by source.
+    outgoing_map: dict[str, list[Transition]] = {s: [] for s in states}
+    for t in efsm.transitions:
+        if t.source_id in outgoing_map:
+            outgoing_map[t.source_id].append(t)
+
+    changed = True
+    while changed:
+        changed = False
+        new_block_of: dict[str, int] = {}
+        next_id = 0
+        # Group states by (current_block, signature) where signature
+        # encodes outgoing activities and the block of each target.
+        sig_to_block: dict[tuple[int, frozenset[tuple[str, int]]], int] = {}
+
+        for s in states:
+            sig = frozenset(
+                (t.activity, block_of[t.target_id])
+                for t in outgoing_map.get(s, [])
+                if t.target_id in block_of
+            )
+            key = (block_of[s], sig)
+            if key not in sig_to_block:
+                sig_to_block[key] = next_id
+                next_id += 1
+            new_block_of[s] = sig_to_block[key]
+
+        if new_block_of != block_of:
+            changed = True
+            block_of = new_block_of
+
+    # ── 3. Merge states within each partition block ──────────────────────
+    blocks: dict[int, list[str]] = {}
+    for s, bid in block_of.items():
+        blocks.setdefault(bid, []).append(s)
+
+    merges = 0
+    for group in blocks.values():
+        if len(group) <= 1:
+            continue
+        # Choose representative: prefer the initial state, else first
+        # alphabetically so results are deterministic.
+        if efsm.initial_state in group:
+            keep = efsm.initial_state
+        else:
+            keep = sorted(group)[0]
+        for remove in sorted(group):
+            if remove == keep or remove not in efsm.states:
+                continue
+            efsm = _simple_merge(efsm, keep, remove)
+            merges += 1
+
+    if merges:
+        logger.info(
+            "  Bisimulation reduction: %d merges → %d states",
+            merges, len(efsm.states),
+        )
+
+    return efsm
+
+
+def _simple_merge(efsm: EFSM, keep: str, remove: str) -> EFSM:
+    """Merge *remove* into *keep* without non-determinism resolution.
+
+    Used by ``_deduplicate_states`` where the two states are already
+    known to be structurally equivalent.
+    """
+    new_transitions: list[Transition] = []
+
+    for t in efsm.transitions:
+        src = keep if t.source_id == remove else t.source_id
+        tgt = keep if t.target_id == remove else t.target_id
+
+        existing = next(
+            (
+                nt for nt in new_transitions
+                if nt.source_id == src
+                and nt.target_id == tgt
+                and nt.activity == t.activity
+            ),
+            None,
+        )
+        if existing is not None:
+            existing.data_samples.extend(t.data_samples)
+            existing.pre_post_pairs.extend(t.pre_post_pairs)
+        else:
+            new_transitions.append(
+                Transition(
+                    source_id=src,
+                    target_id=tgt,
+                    activity=t.activity,
+                    data_samples=list(t.data_samples),
+                    pre_post_pairs=list(t.pre_post_pairs),
+                    guard_formula=t.guard_formula,
+                    update_rule=dict(t.update_rule) if t.update_rule else None,
+                )
+            )
+
+    new_states = {s for s in efsm.states if s != remove}
+    new_accepting = {keep if s == remove else s for s in efsm.accepting_states}
+
+    return EFSM(
+        states=new_states,
+        initial_state=efsm.initial_state,
+        alphabet=set(efsm.alphabet),
+        variables=set(efsm.variables),
+        transitions=new_transitions,
+        accepting_states=new_accepting,
+    )

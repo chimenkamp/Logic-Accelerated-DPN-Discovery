@@ -1,0 +1,1733 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pnml>
+  <net id="dpn_net" type="http://www.pnml.org/version-2009/grammar/pnml">
+    <page id="page0">
+      <place id="p_q10">
+        <name>
+          <text>p_q10</text>
+        </name>
+      </place>
+      <place id="p_q100">
+        <name>
+          <text>p_q100</text>
+        </name>
+      </place>
+      <place id="p_q101">
+        <name>
+          <text>p_q101</text>
+        </name>
+      </place>
+      <place id="p_q105">
+        <name>
+          <text>p_q105</text>
+        </name>
+      </place>
+      <place id="p_q117">
+        <name>
+          <text>p_q117</text>
+        </name>
+      </place>
+      <place id="p_q119">
+        <name>
+          <text>p_q119</text>
+        </name>
+      </place>
+      <place id="p_q121">
+        <name>
+          <text>p_q121</text>
+        </name>
+      </place>
+      <place id="p_q122">
+        <name>
+          <text>p_q122</text>
+        </name>
+      </place>
+      <place id="p_q125">
+        <name>
+          <text>p_q125</text>
+        </name>
+      </place>
+      <place id="p_q128">
+        <name>
+          <text>p_q128</text>
+        </name>
+      </place>
+      <place id="p_q141">
+        <name>
+          <text>p_q141</text>
+        </name>
+      </place>
+      <place id="p_q16">
+        <name>
+          <text>p_q16</text>
+        </name>
+      </place>
+      <place id="p_q162">
+        <name>
+          <text>p_q162</text>
+        </name>
+      </place>
+      <place id="p_q172">
+        <name>
+          <text>p_q172</text>
+        </name>
+      </place>
+      <place id="p_q173">
+        <name>
+          <text>p_q173</text>
+        </name>
+      </place>
+      <place id="p_q174">
+        <name>
+          <text>p_q174</text>
+        </name>
+      </place>
+      <place id="p_q175">
+        <name>
+          <text>p_q175</text>
+        </name>
+      </place>
+      <place id="p_q18">
+        <name>
+          <text>p_q18</text>
+        </name>
+      </place>
+      <place id="p_q188">
+        <name>
+          <text>p_q188</text>
+        </name>
+      </place>
+      <place id="p_q189">
+        <name>
+          <text>p_q189</text>
+        </name>
+      </place>
+      <place id="p_q190">
+        <name>
+          <text>p_q190</text>
+        </name>
+      </place>
+      <place id="p_q191">
+        <name>
+          <text>p_q191</text>
+        </name>
+      </place>
+      <place id="p_q192">
+        <name>
+          <text>p_q192</text>
+        </name>
+      </place>
+      <place id="p_q197">
+        <name>
+          <text>p_q197</text>
+        </name>
+      </place>
+      <place id="p_q20">
+        <name>
+          <text>p_q20</text>
+        </name>
+      </place>
+      <place id="p_q21">
+        <name>
+          <text>p_q21</text>
+        </name>
+      </place>
+      <place id="p_q218">
+        <name>
+          <text>p_q218</text>
+        </name>
+      </place>
+      <place id="p_q219">
+        <name>
+          <text>p_q219</text>
+        </name>
+      </place>
+      <place id="p_q220">
+        <name>
+          <text>p_q220</text>
+        </name>
+      </place>
+      <place id="p_q29">
+        <name>
+          <text>p_q29</text>
+        </name>
+      </place>
+      <place id="p_q33">
+        <name>
+          <text>p_q33</text>
+        </name>
+      </place>
+      <place id="p_q34">
+        <name>
+          <text>p_q34</text>
+        </name>
+      </place>
+      <place id="p_q35">
+        <name>
+          <text>p_q35</text>
+        </name>
+      </place>
+      <place id="p_q37">
+        <name>
+          <text>p_q37</text>
+        </name>
+      </place>
+      <place id="p_q38">
+        <name>
+          <text>p_q38</text>
+        </name>
+      </place>
+      <place id="p_q39">
+        <name>
+          <text>p_q39</text>
+        </name>
+      </place>
+      <place id="p_q40">
+        <name>
+          <text>p_q40</text>
+        </name>
+      </place>
+      <place id="p_q43">
+        <name>
+          <text>p_q43</text>
+        </name>
+      </place>
+      <place id="p_q48">
+        <name>
+          <text>p_q48</text>
+        </name>
+      </place>
+      <place id="p_q5">
+        <name>
+          <text>p_q5</text>
+        </name>
+      </place>
+      <place id="p_q50">
+        <name>
+          <text>p_q50</text>
+        </name>
+      </place>
+      <place id="p_q52">
+        <name>
+          <text>p_q52</text>
+        </name>
+      </place>
+      <place id="p_q53">
+        <name>
+          <text>p_q53</text>
+        </name>
+      </place>
+      <place id="p_q55">
+        <name>
+          <text>p_q55</text>
+        </name>
+      </place>
+      <place id="p_q56">
+        <name>
+          <text>p_q56</text>
+        </name>
+      </place>
+      <place id="p_q57">
+        <name>
+          <text>p_q57</text>
+        </name>
+      </place>
+      <place id="p_q61">
+        <name>
+          <text>p_q61</text>
+        </name>
+      </place>
+      <place id="p_q62">
+        <name>
+          <text>p_q62</text>
+        </name>
+      </place>
+      <place id="p_q7">
+        <name>
+          <text>p_q7</text>
+        </name>
+      </place>
+      <place id="p_q78">
+        <name>
+          <text>p_q78</text>
+        </name>
+      </place>
+      <place id="p_q79">
+        <name>
+          <text>p_q79</text>
+        </name>
+      </place>
+      <place id="p_q8">
+        <name>
+          <text>p_q8</text>
+        </name>
+      </place>
+      <place id="p_q87">
+        <name>
+          <text>p_q87</text>
+        </name>
+      </place>
+      <place id="p_q88">
+        <name>
+          <text>p_q88</text>
+        </name>
+      </place>
+      <place id="p_q9">
+        <name>
+          <text>p_q9</text>
+        </name>
+      </place>
+      <place id="p_q90">
+        <name>
+          <text>p_q90</text>
+        </name>
+      </place>
+      <place id="p_q91">
+        <name>
+          <text>p_q91</text>
+        </name>
+      </place>
+      <transition id="t_Create Fine_1">
+        <name>
+          <text>Create Fine</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="totalPaymentAmount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Create Fine_1" source="p_q48" target="t_Create Fine_1" />
+      <arc id="arc_t_Create Fine_1_to_p_q48" source="t_Create Fine_1" target="p_q48" />
+      <transition id="t_Payment_2">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Payment_2" source="p_q48" target="t_Payment_2" />
+      <arc id="arc_t_Payment_2_to_p_q10" source="t_Payment_2" target="p_q10" />
+      <transition id="t_Send Fine_3">
+        <name>
+          <text>Send Fine</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 45 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Send Fine_3" source="p_q48" target="t_Send Fine_3" />
+      <arc id="arc_t_Send Fine_3_to_p_q48" source="t_Send Fine_3" target="p_q48" />
+      <transition id="t_Insert Fine Notification_4">
+        <name>
+          <text>Insert Fine Notification</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 45 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Insert Fine Notification_4" source="p_q48" target="t_Insert Fine Notification_4" />
+      <arc id="arc_t_Insert Fine Notification_4_to_p_q48" source="t_Insert Fine Notification_4" target="p_q48" />
+      <transition id="t_Add penalty_5">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Add penalty_5" source="p_q48" target="t_Add penalty_5" />
+      <arc id="arc_t_Add penalty_5_to_p_q5" source="t_Add penalty_5" target="p_q5" />
+      <transition id="t_Send for Credit Collection_6">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q5_to_t_Send for Credit Collection_6" source="p_q5" target="t_Send for Credit Collection_6" />
+      <arc id="arc_t_Send for Credit Collection_6_to_p_q10" source="t_Send for Credit Collection_6" target="p_q10" />
+      <transition id="t_Insert Date Appeal to Prefecture_7">
+        <name>
+          <text>Insert Date Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 45 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Insert Date Appeal to Prefecture_7" source="p_q48" target="t_Insert Date Appeal to Prefecture_7" />
+      <arc id="arc_t_Insert Date Appeal to Prefecture_7_to_p_q7" source="t_Insert Date Appeal to Prefecture_7" target="p_q7" />
+      <transition id="t_Add penalty_8">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q7_to_t_Add penalty_8" source="p_q7" target="t_Add penalty_8" />
+      <arc id="arc_t_Add penalty_8_to_p_q8" source="t_Add penalty_8" target="p_q8" />
+      <transition id="t_Send Appeal to Prefecture_9">
+        <name>
+          <text>Send Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q8_to_t_Send Appeal to Prefecture_9" source="p_q8" target="t_Send Appeal to Prefecture_9" />
+      <arc id="arc_t_Send Appeal to Prefecture_9_to_p_q9" source="t_Send Appeal to Prefecture_9" target="p_q9" />
+      <transition id="t_Payment_10">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q5_to_t_Payment_10" source="p_q5" target="t_Payment_10" />
+      <arc id="arc_t_Payment_10_to_p_q10" source="t_Payment_10" target="p_q10" />
+      <transition id="t_Payment_11">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q5_to_t_Payment_11" source="p_q5" target="t_Payment_11" />
+      <arc id="arc_t_Payment_11_to_p_q48" source="t_Payment_11" target="p_q48" />
+      <transition id="t_Create Fine_12">
+        <name>
+          <text>Create Fine</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="points">0</update>
+          <update variable="totalPaymentAmount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Create Fine_12" source="p_q48" target="t_Create Fine_12" />
+      <arc id="arc_t_Create Fine_12_to_p_q172" source="t_Create Fine_12" target="p_q172" />
+      <transition id="t_Payment_13">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 10 (* -1 expense)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">amount</update>
+          <update variable="totalPaymentAmount">amount</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q172_to_t_Payment_13" source="p_q172" target="t_Payment_13" />
+      <arc id="arc_t_Payment_13_to_p_q10" source="t_Payment_13" target="p_q10" />
+      <transition id="t_Payment_14">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q5_to_t_Payment_14" source="p_q5" target="t_Payment_14" />
+      <arc id="arc_t_Payment_14_to_p_q16" source="t_Payment_14" target="p_q16" />
+      <transition id="t_Payment_15">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q16_to_t_Payment_15" source="p_q16" target="t_Payment_15" />
+      <arc id="arc_t_Payment_15_to_p_q10" source="t_Payment_15" target="p_q10" />
+      <transition id="t_Payment_16">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q16_to_t_Payment_16" source="p_q16" target="t_Payment_16" />
+      <arc id="arc_t_Payment_16_to_p_q18" source="t_Payment_16" target="p_q18" />
+      <transition id="t_Payment_17">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q18_to_t_Payment_17" source="p_q18" target="t_Payment_17" />
+      <arc id="arc_t_Payment_17_to_p_q10" source="t_Payment_17" target="p_q10" />
+      <transition id="t_Payment_18">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Payment_18" source="p_q48" target="t_Payment_18" />
+      <arc id="arc_t_Payment_18_to_p_q20" source="t_Payment_18" target="p_q20" />
+      <transition id="t_Add penalty_19">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q20_to_t_Add penalty_19" source="p_q20" target="t_Add penalty_19" />
+      <arc id="arc_t_Add penalty_19_to_p_q21" source="t_Add penalty_19" target="p_q21" />
+      <transition id="t_Payment_20">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q21_to_t_Payment_20" source="p_q21" target="t_Payment_20" />
+      <arc id="arc_t_Payment_20_to_p_q10" source="t_Payment_20" target="p_q10" />
+      <transition id="t_Send for Credit Collection_21">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q21_to_t_Send for Credit Collection_21" source="p_q21" target="t_Send for Credit Collection_21" />
+      <arc id="arc_t_Send for Credit Collection_21_to_p_q10" source="t_Send for Credit Collection_21" target="p_q10" />
+      <transition id="t_Send for Credit Collection_22">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 379/25 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Send for Credit Collection_22" source="p_q48" target="t_Send for Credit Collection_22" />
+      <arc id="arc_t_Send for Credit Collection_22_to_p_q10" source="t_Send for Credit Collection_22" target="p_q10" />
+      <transition id="t_Payment_23">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Payment_23" source="p_q48" target="t_Payment_23" />
+      <arc id="arc_t_Payment_23_to_p_q48" source="t_Payment_23" target="p_q48" />
+      <transition id="t_Send for Credit Collection_24">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q16_to_t_Send for Credit Collection_24" source="p_q16" target="t_Send for Credit Collection_24" />
+      <arc id="arc_t_Send for Credit Collection_24_to_p_q10" source="t_Send for Credit Collection_24" target="p_q10" />
+      <transition id="t_Insert Date Appeal to Prefecture_25">
+        <name>
+          <text>Insert Date Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q5_to_t_Insert Date Appeal to Prefecture_25" source="p_q5" target="t_Insert Date Appeal to Prefecture_25" />
+      <arc id="arc_t_Insert Date Appeal to Prefecture_25_to_p_q29" source="t_Insert Date Appeal to Prefecture_25" target="p_q29" />
+      <transition id="t_Send Appeal to Prefecture_26">
+        <name>
+          <text>Send Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q29_to_t_Send Appeal to Prefecture_26" source="p_q29" target="t_Send Appeal to Prefecture_26" />
+      <arc id="arc_t_Send Appeal to Prefecture_26_to_p_q10" source="t_Send Appeal to Prefecture_26" target="p_q10" />
+      <transition id="t_Payment_27">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q5_to_t_Payment_27" source="p_q5" target="t_Payment_27" />
+      <arc id="arc_t_Payment_27_to_p_q128" source="t_Payment_27" target="p_q128" />
+      <transition id="t_Send for Credit Collection_28">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q128_to_t_Send for Credit Collection_28" source="p_q128" target="t_Send for Credit Collection_28" />
+      <arc id="arc_t_Send for Credit Collection_28_to_p_q10" source="t_Send for Credit Collection_28" target="p_q10" />
+      <transition id="t_Send Appeal to Prefecture_29">
+        <name>
+          <text>Send Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q29_to_t_Send Appeal to Prefecture_29" source="p_q29" target="t_Send Appeal to Prefecture_29" />
+      <arc id="arc_t_Send Appeal to Prefecture_29_to_p_q33" source="t_Send Appeal to Prefecture_29" target="p_q33" />
+      <transition id="t_Receive Result Appeal from Prefecture_30">
+        <name>
+          <text>Receive Result Appeal from Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q33_to_t_Receive Result Appeal from Prefecture_30" source="p_q33" target="t_Receive Result Appeal from Prefecture_30" />
+      <arc id="arc_t_Receive Result Appeal from Prefecture_30_to_p_q34" source="t_Receive Result Appeal from Prefecture_30" target="p_q34" />
+      <transition id="t_Notify Result Appeal to Offender_31">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 28 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q34_to_t_Notify Result Appeal to Offender_31" source="p_q34" target="t_Notify Result Appeal to Offender_31" />
+      <arc id="arc_t_Notify Result Appeal to Offender_31_to_p_q35" source="t_Notify Result Appeal to Offender_31" target="p_q35" />
+      <transition id="t_Payment_32">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q35_to_t_Payment_32" source="p_q35" target="t_Payment_32" />
+      <arc id="arc_t_Payment_32_to_p_q10" source="t_Payment_32" target="p_q10" />
+      <transition id="t_Appeal to Judge_33">
+        <name>
+          <text>Appeal to Judge</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 26 (* -1 expense)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="matricola">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Appeal to Judge_33" source="p_q48" target="t_Appeal to Judge_33" />
+      <arc id="arc_t_Appeal to Judge_33_to_p_q37" source="t_Appeal to Judge_33" target="p_q37" />
+      <transition id="t_Add penalty_34">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 451/20 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q37_to_t_Add penalty_34" source="p_q37" target="t_Add penalty_34" />
+      <arc id="arc_t_Add penalty_34_to_p_q38" source="t_Add penalty_34" target="p_q38" />
+      <transition id="t_Payment_35">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q38_to_t_Payment_35" source="p_q38" target="t_Payment_35" />
+      <arc id="arc_t_Payment_35_to_p_q39" source="t_Payment_35" target="p_q39" />
+      <transition id="t_Payment_36">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(=&gt; (&gt;= (+ 344/5 (* -1 paymentAmount)) 0) (&gt;= (+ 82 (* -1 article)) 0))</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q39_to_t_Payment_36" source="p_q39" target="t_Payment_36" />
+      <arc id="arc_t_Payment_36_to_p_q40" source="t_Payment_36" target="p_q40" />
+      <transition id="t_Send Fine_37">
+        <name>
+          <text>Send Fine</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 30 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q172_to_t_Send Fine_37" source="p_q172" target="t_Send Fine_37" />
+      <arc id="arc_t_Send Fine_37_to_p_q172" source="t_Send Fine_37" target="p_q172" />
+      <transition id="t_Insert Fine Notification_38">
+        <name>
+          <text>Insert Fine Notification</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 30 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q172_to_t_Insert Fine Notification_38" source="p_q172" target="t_Insert Fine Notification_38" />
+      <arc id="arc_t_Insert Fine Notification_38_to_p_q172" source="t_Insert Fine Notification_38" target="p_q172" />
+      <transition id="t_Add penalty_39">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 30 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q172_to_t_Add penalty_39" source="p_q172" target="t_Add penalty_39" />
+      <arc id="arc_t_Add penalty_39_to_p_q43" source="t_Add penalty_39" target="p_q43" />
+      <transition id="t_Send for Credit Collection_40">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q43_to_t_Send for Credit Collection_40" source="p_q43" target="t_Send for Credit Collection_40" />
+      <arc id="arc_t_Send for Credit Collection_40_to_p_q10" source="t_Send for Credit Collection_40" target="p_q10" />
+      <transition id="t_Payment_41">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Payment_41" source="p_q48" target="t_Payment_41" />
+      <arc id="arc_t_Payment_41_to_p_q141" source="t_Payment_41" target="p_q141" />
+      <transition id="t_Add penalty_42">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q141_to_t_Add penalty_42" source="p_q141" target="t_Add penalty_42" />
+      <arc id="arc_t_Add penalty_42_to_p_q128" source="t_Add penalty_42" target="p_q128" />
+      <transition id="t_Payment_43">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q128_to_t_Payment_43" source="p_q128" target="t_Payment_43" />
+      <arc id="arc_t_Payment_43_to_p_q10" source="t_Payment_43" target="p_q10" />
+      <transition id="t_Send Appeal to Prefecture_44">
+        <name>
+          <text>Send Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(=&gt; (&gt;= (+ 36 (* -1 amount)) 0) (&gt;= (+ 34 (* -1 amount)) 0))</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q7_to_t_Send Appeal to Prefecture_44" source="p_q7" target="t_Send Appeal to Prefecture_44" />
+      <arc id="arc_t_Send Appeal to Prefecture_44_to_p_q48" source="t_Send Appeal to Prefecture_44" target="p_q48" />
+      <transition id="t_Receive Result Appeal from Prefecture_45">
+        <name>
+          <text>Receive Result Appeal from Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(and (&gt;= (+ 2873/10 (* -1 amount)) 0) (&lt; (+ 2391/200 (* -1 expense)) 0))</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q5_to_t_Receive Result Appeal from Prefecture_45" source="p_q5" target="t_Receive Result Appeal from Prefecture_45" />
+      <arc id="arc_t_Receive Result Appeal from Prefecture_45_to_p_q50" source="t_Receive Result Appeal from Prefecture_45" target="p_q50" />
+      <transition id="t_Appeal to Judge_46">
+        <name>
+          <text>Appeal to Judge</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="matricola">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q50_to_t_Appeal to Judge_46" source="p_q50" target="t_Appeal to Judge_46" />
+      <arc id="arc_t_Appeal to Judge_46_to_p_q10" source="t_Appeal to Judge_46" target="p_q10" />
+      <transition id="t_Payment_47">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">amount</update>
+          <update variable="totalPaymentAmount">amount</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Payment_47" source="p_q48" target="t_Payment_47" />
+      <arc id="arc_t_Payment_47_to_p_q52" source="t_Payment_47" target="p_q52" />
+      <transition id="t_Send Fine_48">
+        <name>
+          <text>Send Fine</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 671/100 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q52_to_t_Send Fine_48" source="p_q52" target="t_Send Fine_48" />
+      <arc id="arc_t_Send Fine_48_to_p_q53" source="t_Send Fine_48" target="p_q53" />
+      <transition id="t_Send for Credit Collection_49">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q38_to_t_Send for Credit Collection_49" source="p_q38" target="t_Send for Credit Collection_49" />
+      <arc id="arc_t_Send for Credit Collection_49_to_p_q10" source="t_Send for Credit Collection_49" target="p_q10" />
+      <transition id="t_Receive Result Appeal from Prefecture_50">
+        <name>
+          <text>Receive Result Appeal from Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 45 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Receive Result Appeal from Prefecture_50" source="p_q48" target="t_Receive Result Appeal from Prefecture_50" />
+      <arc id="arc_t_Receive Result Appeal from Prefecture_50_to_p_q55" source="t_Receive Result Appeal from Prefecture_50" target="p_q55" />
+      <transition id="t_Notify Result Appeal to Offender_51">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 2751/20 (* -1 amount)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q55_to_t_Notify Result Appeal to Offender_51" source="p_q55" target="t_Notify Result Appeal to Offender_51" />
+      <arc id="arc_t_Notify Result Appeal to Offender_51_to_p_q56" source="t_Notify Result Appeal to Offender_51" target="p_q56" />
+      <transition id="t_Add penalty_52">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="amount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q56_to_t_Add penalty_52" source="p_q56" target="t_Add penalty_52" />
+      <arc id="arc_t_Add penalty_52_to_p_q57" source="t_Add penalty_52" target="p_q57" />
+      <transition id="t_Appeal to Judge_53">
+        <name>
+          <text>Appeal to Judge</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="matricola">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q57_to_t_Appeal to Judge_53" source="p_q57" target="t_Appeal to Judge_53" />
+      <arc id="arc_t_Appeal to Judge_53_to_p_q10" source="t_Appeal to Judge_53" target="p_q10" />
+      <transition id="t_Payment_54">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 23 (* -1 amount)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q53_to_t_Payment_54" source="p_q53" target="t_Payment_54" />
+      <arc id="arc_t_Payment_54_to_p_q10" source="t_Payment_54" target="p_q10" />
+      <transition id="t_Add penalty_55">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Add penalty_55" source="p_q48" target="t_Add penalty_55" />
+      <arc id="arc_t_Add penalty_55_to_p_q61" source="t_Add penalty_55" target="p_q61" />
+      <transition id="t_Insert Date Appeal to Prefecture_56">
+        <name>
+          <text>Insert Date Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q61_to_t_Insert Date Appeal to Prefecture_56" source="p_q61" target="t_Insert Date Appeal to Prefecture_56" />
+      <arc id="arc_t_Insert Date Appeal to Prefecture_56_to_p_q62" source="t_Insert Date Appeal to Prefecture_56" target="p_q62" />
+      <transition id="t_Send Appeal to Prefecture_57">
+        <name>
+          <text>Send Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 68841/100 (* -1 amount)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q62_to_t_Send Appeal to Prefecture_57" source="p_q62" target="t_Send Appeal to Prefecture_57" />
+      <arc id="arc_t_Send Appeal to Prefecture_57_to_p_q10" source="t_Send Appeal to Prefecture_57" target="p_q10" />
+      <transition id="t_Add penalty_58">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q7_to_t_Add penalty_58" source="p_q7" target="t_Add penalty_58" />
+      <arc id="arc_t_Add penalty_58_to_p_q122" source="t_Add penalty_58" target="p_q122" />
+      <transition id="t_Send Appeal to Prefecture_59">
+        <name>
+          <text>Send Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q122_to_t_Send Appeal to Prefecture_59" source="p_q122" target="t_Send Appeal to Prefecture_59" />
+      <arc id="arc_t_Send Appeal to Prefecture_59_to_p_q10" source="t_Send Appeal to Prefecture_59" target="p_q10" />
+      <transition id="t_Payment_60">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 617/40 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q20_to_t_Payment_60" source="p_q20" target="t_Payment_60" />
+      <arc id="arc_t_Payment_60_to_p_q10" source="t_Payment_60" target="p_q10" />
+      <transition id="t_Notify Result Appeal to Offender_61">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 28 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q34_to_t_Notify Result Appeal to Offender_61" source="p_q34" target="t_Notify Result Appeal to Offender_61" />
+      <arc id="arc_t_Notify Result Appeal to Offender_61_to_p_q10" source="t_Notify Result Appeal to Offender_61" target="p_q10" />
+      <transition id="t_Payment_62">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q43_to_t_Payment_62" source="p_q43" target="t_Payment_62" />
+      <arc id="arc_t_Payment_62_to_p_q10" source="t_Payment_62" target="p_q10" />
+      <transition id="t_Receive Result Appeal from Prefecture_63">
+        <name>
+          <text>Receive Result Appeal from Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q9_to_t_Receive Result Appeal from Prefecture_63" source="p_q9" target="t_Receive Result Appeal from Prefecture_63" />
+      <arc id="arc_t_Receive Result Appeal from Prefecture_63_to_p_q78" source="t_Receive Result Appeal from Prefecture_63" target="p_q78" />
+      <transition id="t_Notify Result Appeal to Offender_64">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q78_to_t_Notify Result Appeal to Offender_64" source="p_q78" target="t_Notify Result Appeal to Offender_64" />
+      <arc id="arc_t_Notify Result Appeal to Offender_64_to_p_q79" source="t_Notify Result Appeal to Offender_64" target="p_q79" />
+      <transition id="t_Send for Credit Collection_65">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q79_to_t_Send for Credit Collection_65" source="p_q79" target="t_Send for Credit Collection_65" />
+      <arc id="arc_t_Send for Credit Collection_65_to_p_q10" source="t_Send for Credit Collection_65" target="p_q10" />
+      <transition id="t_Appeal to Judge_66">
+        <name>
+          <text>Appeal to Judge</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(or (&gt;= (+ 21 (* -1 expense)) 0) (&gt;= (+ 7 (* -1 article)) 0))</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="matricola">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q35_to_t_Appeal to Judge_66" source="p_q35" target="t_Appeal to Judge_66" />
+      <arc id="arc_t_Appeal to Judge_66_to_p_q10" source="t_Appeal to Judge_66" target="p_q10" />
+      <transition id="t_Payment_67">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 617/40 (* -1 expense)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q20_to_t_Payment_67" source="p_q20" target="t_Payment_67" />
+      <arc id="arc_t_Payment_67_to_p_q125" source="t_Payment_67" target="p_q125" />
+      <transition id="t_Add penalty_68">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q125_to_t_Add penalty_68" source="p_q125" target="t_Add penalty_68" />
+      <arc id="arc_t_Add penalty_68_to_p_q105" source="t_Add penalty_68" target="p_q105" />
+      <transition id="t_Payment_69">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q105_to_t_Payment_69" source="p_q105" target="t_Payment_69" />
+      <arc id="arc_t_Payment_69_to_p_q10" source="t_Payment_69" target="p_q10" />
+      <transition id="t_Receive Result Appeal from Prefecture_70">
+        <name>
+          <text>Receive Result Appeal from Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q29_to_t_Receive Result Appeal from Prefecture_70" source="p_q29" target="t_Receive Result Appeal from Prefecture_70" />
+      <arc id="arc_t_Receive Result Appeal from Prefecture_70_to_p_q87" source="t_Receive Result Appeal from Prefecture_70" target="p_q87" />
+      <transition id="t_Notify Result Appeal to Offender_71">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q87_to_t_Notify Result Appeal to Offender_71" source="p_q87" target="t_Notify Result Appeal to Offender_71" />
+      <arc id="arc_t_Notify Result Appeal to Offender_71_to_p_q88" source="t_Notify Result Appeal to Offender_71" target="p_q88" />
+      <transition id="t_Payment_72">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 143/2 (* -1 amount)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q88_to_t_Payment_72" source="p_q88" target="t_Payment_72" />
+      <arc id="arc_t_Payment_72_to_p_q10" source="t_Payment_72" target="p_q10" />
+      <transition id="t_Receive Result Appeal from Prefecture_73">
+        <name>
+          <text>Receive Result Appeal from Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 6877/100 (* -1 amount)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q8_to_t_Receive Result Appeal from Prefecture_73" source="p_q8" target="t_Receive Result Appeal from Prefecture_73" />
+      <arc id="arc_t_Receive Result Appeal from Prefecture_73_to_p_q90" source="t_Receive Result Appeal from Prefecture_73" target="p_q90" />
+      <transition id="t_Notify Result Appeal to Offender_74">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q90_to_t_Notify Result Appeal to Offender_74" source="p_q90" target="t_Notify Result Appeal to Offender_74" />
+      <arc id="arc_t_Notify Result Appeal to Offender_74_to_p_q91" source="t_Notify Result Appeal to Offender_74" target="p_q91" />
+      <transition id="t_Send for Credit Collection_75">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q91_to_t_Send for Credit Collection_75" source="p_q91" target="t_Send for Credit Collection_75" />
+      <arc id="arc_t_Send for Credit Collection_75_to_p_q122" source="t_Send for Credit Collection_75" target="p_q122" />
+      <transition id="t_Payment_76">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q18_to_t_Payment_76" source="p_q18" target="t_Payment_76" />
+      <arc id="arc_t_Payment_76_to_p_q105" source="t_Payment_76" target="p_q105" />
+      <transition id="t_Payment_77">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q43_to_t_Payment_77" source="p_q43" target="t_Payment_77" />
+      <arc id="arc_t_Payment_77_to_p_q128" source="t_Payment_77" target="p_q128" />
+      <transition id="t_Payment_78">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q79_to_t_Payment_78" source="p_q79" target="t_Payment_78" />
+      <arc id="arc_t_Payment_78_to_p_q10" source="t_Payment_78" target="p_q10" />
+      <transition id="t_Payment_79">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 10 (* -1 expense)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">amount</update>
+          <update variable="totalPaymentAmount">amount</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q172_to_t_Payment_79" source="p_q172" target="t_Payment_79" />
+      <arc id="arc_t_Payment_79_to_p_q100" source="t_Payment_79" target="p_q100" />
+      <transition id="t_Add penalty_80">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="amount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q100_to_t_Add penalty_80" source="p_q100" target="t_Add penalty_80" />
+      <arc id="arc_t_Add penalty_80_to_p_q101" source="t_Add penalty_80" target="p_q101" />
+      <transition id="t_Send for Credit Collection_81">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q101_to_t_Send for Credit Collection_81" source="p_q101" target="t_Send for Credit Collection_81" />
+      <arc id="arc_t_Send for Credit Collection_81_to_p_q10" source="t_Send for Credit Collection_81" target="p_q10" />
+      <transition id="t_Notify Result Appeal to Offender_82">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q50_to_t_Notify Result Appeal to Offender_82" source="p_q50" target="t_Notify Result Appeal to Offender_82" />
+      <arc id="arc_t_Notify Result Appeal to Offender_82_to_p_q101" source="t_Notify Result Appeal to Offender_82" target="p_q101" />
+      <transition id="t_Payment_83">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q38_to_t_Payment_83" source="p_q38" target="t_Payment_83" />
+      <arc id="arc_t_Payment_83_to_p_q10" source="t_Payment_83" target="p_q10" />
+      <transition id="t_Appeal to Judge_84">
+        <name>
+          <text>Appeal to Judge</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(and (&lt; (+ 16 (* -1 expense)) 0) (&lt; (+ 82 (* -1 article)) 0))</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="matricola">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q35_to_t_Appeal to Judge_84" source="p_q35" target="t_Appeal to Judge_84" />
+      <arc id="arc_t_Appeal to Judge_84_to_p_q105" source="t_Appeal to Judge_84" target="p_q105" />
+      <transition id="t_Insert Fine Notification_85">
+        <name>
+          <text>Insert Fine Notification</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 36 (* -1 amount)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q7_to_t_Insert Fine Notification_85" source="p_q7" target="t_Insert Fine Notification_85" />
+      <arc id="arc_t_Insert Fine Notification_85_to_p_q7" source="t_Insert Fine Notification_85" target="p_q7" />
+      <transition id="t_Payment_86">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q21_to_t_Payment_86" source="p_q21" target="t_Payment_86" />
+      <arc id="arc_t_Payment_86_to_p_q105" source="t_Payment_86" target="p_q105" />
+      <transition id="t_Add penalty_87">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 2751/20 (* -1 amount)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q55_to_t_Add penalty_87" source="p_q55" target="t_Add penalty_87" />
+      <arc id="arc_t_Add penalty_87_to_p_q117" source="t_Add penalty_87" target="p_q117" />
+      <transition id="t_Notify Result Appeal to Offender_88">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 47 (* -1 amount)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q117_to_t_Notify Result Appeal to Offender_88" source="p_q117" target="t_Notify Result Appeal to Offender_88" />
+      <arc id="arc_t_Notify Result Appeal to Offender_88_to_p_q10" source="t_Notify Result Appeal to Offender_88" target="p_q10" />
+      <transition id="t_Add penalty_89">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Add penalty_89" source="p_q48" target="t_Add penalty_89" />
+      <arc id="arc_t_Add penalty_89_to_p_q119" source="t_Add penalty_89" target="p_q119" />
+      <transition id="t_Payment_90">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q119_to_t_Payment_90" source="p_q119" target="t_Payment_90" />
+      <arc id="arc_t_Payment_90_to_p_q10" source="t_Payment_90" target="p_q10" />
+      <transition id="t_Payment_91">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(and (&gt;= (+ 36 (* -1 amount)) 0) (&lt; (+ 34 (* -1 amount)) 0))</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q7_to_t_Payment_91" source="p_q7" target="t_Payment_91" />
+      <arc id="arc_t_Payment_91_to_p_q121" source="t_Payment_91" target="p_q121" />
+      <transition id="t_Add penalty_92">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="amount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q121_to_t_Add penalty_92" source="p_q121" target="t_Add penalty_92" />
+      <arc id="arc_t_Add penalty_92_to_p_q122" source="t_Add penalty_92" target="p_q122" />
+      <transition id="t_Insert Fine Notification_93">
+        <name>
+          <text>Insert Fine Notification</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 671/100 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q52_to_t_Insert Fine Notification_93" source="p_q52" target="t_Insert Fine Notification_93" />
+      <arc id="arc_t_Insert Fine Notification_93_to_p_q125" source="t_Insert Fine Notification_93" target="p_q125" />
+      <transition id="t_Appeal to Judge_94">
+        <name>
+          <text>Appeal to Judge</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(=&gt; (&gt;= (+ 2873/10 (* -1 amount)) 0) (&gt;= (+ 2391/200 (* -1 expense)) 0))</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="matricola">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q5_to_t_Appeal to Judge_94" source="p_q5" target="t_Appeal to Judge_94" />
+      <arc id="arc_t_Appeal to Judge_94_to_p_q128" source="t_Appeal to Judge_94" target="p_q128" />
+      <transition id="t_Send for Credit Collection_95">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(and (&gt;= (+ 344/5 (* -1 paymentAmount)) 0) (&lt; (+ 82 (* -1 article)) 0))</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q39_to_t_Send for Credit Collection_95" source="p_q39" target="t_Send for Credit Collection_95" />
+      <arc id="arc_t_Send for Credit Collection_95_to_p_q10" source="t_Send for Credit Collection_95" target="p_q10" />
+      <transition id="t_Payment_96">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Payment_96" source="p_q48" target="t_Payment_96" />
+      <arc id="arc_t_Payment_96_to_p_q125" source="t_Payment_96" target="p_q125" />
+      <transition id="t_Insert Fine Notification_97">
+        <name>
+          <text>Insert Fine Notification</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 23 (* -1 amount)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q53_to_t_Insert Fine Notification_97" source="p_q53" target="t_Insert Fine Notification_97" />
+      <arc id="arc_t_Insert Fine Notification_97_to_p_q141" source="t_Insert Fine Notification_97" target="p_q141" />
+      <transition id="t_Send for Credit Collection_98">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q119_to_t_Send for Credit Collection_98" source="p_q119" target="t_Send for Credit Collection_98" />
+      <arc id="arc_t_Send for Credit Collection_98_to_p_q10" source="t_Send for Credit Collection_98" target="p_q10" />
+      <transition id="t_Send for Credit Collection_99">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q35_to_t_Send for Credit Collection_99" source="p_q35" target="t_Send for Credit Collection_99" />
+      <arc id="arc_t_Send for Credit Collection_99_to_p_q10" source="t_Send for Credit Collection_99" target="p_q10" />
+      <transition id="t_Send for Credit Collection_100">
+        <name>
+          <text>Send for Credit Collection</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 143/2 (* -1 amount)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q88_to_t_Send for Credit Collection_100" source="p_q88" target="t_Send for Credit Collection_100" />
+      <arc id="arc_t_Send for Credit Collection_100_to_p_q122" source="t_Send for Credit Collection_100" target="p_q122" />
+      <transition id="t_Insert Fine Notification_101">
+        <name>
+          <text>Insert Fine Notification</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q20_to_t_Insert Fine Notification_101" source="p_q20" target="t_Insert Fine Notification_101" />
+      <arc id="arc_t_Insert Fine Notification_101_to_p_q125" source="t_Insert Fine Notification_101" target="p_q125" />
+      <transition id="t_Notify Result Appeal to Offender_102">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 61/2 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q117_to_t_Notify Result Appeal to Offender_102" source="p_q117" target="t_Notify Result Appeal to Offender_102" />
+      <arc id="arc_t_Notify Result Appeal to Offender_102_to_p_q162" source="t_Notify Result Appeal to Offender_102" target="p_q162" />
+      <transition id="t_Payment_103">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">paymentAmount</update>
+          <update variable="totalPaymentAmount">(+ paymentAmount totalPaymentAmount)</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q162_to_t_Payment_103" source="p_q162" target="t_Payment_103" />
+      <arc id="arc_t_Payment_103_to_p_q105" source="t_Payment_103" target="p_q105" />
+      <transition id="t_Appeal to Judge_104">
+        <name>
+          <text>Appeal to Judge</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="matricola">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q79_to_t_Appeal to Judge_104" source="p_q79" target="t_Appeal to Judge_104" />
+      <arc id="arc_t_Appeal to Judge_104_to_p_q10" source="t_Appeal to Judge_104" target="p_q10" />
+      <transition id="t_Payment_105">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 6877/100 (* -1 amount)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q8_to_t_Payment_105" source="p_q8" target="t_Payment_105" />
+      <arc id="arc_t_Payment_105_to_p_q122" source="t_Payment_105" target="p_q122" />
+      <transition id="t_Insert Date Appeal to Prefecture_106">
+        <name>
+          <text>Insert Date Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 30 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q172_to_t_Insert Date Appeal to Prefecture_106" source="p_q172" target="t_Insert Date Appeal to Prefecture_106" />
+      <arc id="arc_t_Insert Date Appeal to Prefecture_106_to_p_q172" source="t_Insert Date Appeal to Prefecture_106" target="p_q172" />
+      <transition id="t_Send Appeal to Prefecture_107">
+        <name>
+          <text>Send Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 30 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q172_to_t_Send Appeal to Prefecture_107" source="p_q172" target="t_Send Appeal to Prefecture_107" />
+      <arc id="arc_t_Send Appeal to Prefecture_107_to_p_q173" source="t_Send Appeal to Prefecture_107" target="p_q173" />
+      <transition id="t_Add penalty_108">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="amount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q173_to_t_Add penalty_108" source="p_q173" target="t_Add penalty_108" />
+      <arc id="arc_t_Add penalty_108_to_p_q174" source="t_Add penalty_108" target="p_q174" />
+      <transition id="t_Receive Result Appeal from Prefecture_109">
+        <name>
+          <text>Receive Result Appeal from Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q174_to_t_Receive Result Appeal from Prefecture_109" source="p_q174" target="t_Receive Result Appeal from Prefecture_109" />
+      <arc id="arc_t_Receive Result Appeal from Prefecture_109_to_p_q175" source="t_Receive Result Appeal from Prefecture_109" target="p_q175" />
+      <transition id="t_Notify Result Appeal to Offender_110">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 28 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q175_to_t_Notify Result Appeal to Offender_110" source="p_q175" target="t_Notify Result Appeal to Offender_110" />
+      <arc id="arc_t_Notify Result Appeal to Offender_110_to_p_q101" source="t_Notify Result Appeal to Offender_110" target="p_q101" />
+      <transition id="t_Send Appeal to Prefecture_111">
+        <name>
+          <text>Send Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q43_to_t_Send Appeal to Prefecture_111" source="p_q43" target="t_Send Appeal to Prefecture_111" />
+      <arc id="arc_t_Send Appeal to Prefecture_111_to_p_q10" source="t_Send Appeal to Prefecture_111" target="p_q10" />
+      <transition id="t_Add penalty_112">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 671/100 (* -1 expense)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="amount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q52_to_t_Add penalty_112" source="p_q52" target="t_Add penalty_112" />
+      <arc id="arc_t_Add penalty_112_to_p_q18" source="t_Add penalty_112" target="p_q18" />
+      <transition id="t_Payment_113">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q40_to_t_Payment_113" source="p_q40" target="t_Payment_113" />
+      <arc id="arc_t_Payment_113_to_p_q188" source="t_Payment_113" target="p_q188" />
+      <transition id="t_Payment_114">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q188_to_t_Payment_114" source="p_q188" target="t_Payment_114" />
+      <arc id="arc_t_Payment_114_to_p_q189" source="t_Payment_114" target="p_q189" />
+      <transition id="t_Payment_115">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q189_to_t_Payment_115" source="p_q189" target="t_Payment_115" />
+      <arc id="arc_t_Payment_115_to_p_q190" source="t_Payment_115" target="p_q190" />
+      <transition id="t_Payment_116">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q190_to_t_Payment_116" source="p_q190" target="t_Payment_116" />
+      <arc id="arc_t_Payment_116_to_p_q191" source="t_Payment_116" target="p_q191" />
+      <transition id="t_Payment_117">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q191_to_t_Payment_117" source="p_q191" target="t_Payment_117" />
+      <arc id="arc_t_Payment_117_to_p_q192" source="t_Payment_117" target="p_q192" />
+      <transition id="t_Payment_118">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">paymentAmount</update>
+          <update variable="totalPaymentAmount">(+ dismissal matricola)</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q192_to_t_Payment_118" source="p_q192" target="t_Payment_118" />
+      <arc id="arc_t_Payment_118_to_p_q162" source="t_Payment_118" target="p_q162" />
+      <transition id="t_Appeal to Judge_119">
+        <name>
+          <text>Appeal to Judge</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 82 (* -1 article)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="matricola">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q78_to_t_Appeal to Judge_119" source="p_q78" target="t_Appeal to Judge_119" />
+      <arc id="arc_t_Appeal to Judge_119_to_p_q197" source="t_Appeal to Judge_119" target="p_q197" />
+      <transition id="t_Notify Result Appeal to Offender_120">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q197_to_t_Notify Result Appeal to Offender_120" source="p_q197" target="t_Notify Result Appeal to Offender_120" />
+      <arc id="arc_t_Notify Result Appeal to Offender_120_to_p_q105" source="t_Notify Result Appeal to Offender_120" target="p_q105" />
+      <transition id="t_Payment_121">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 313/2 (* -1 article)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q119_to_t_Payment_121" source="p_q119" target="t_Payment_121" />
+      <arc id="arc_t_Payment_121_to_p_q105" source="t_Payment_121" target="p_q105" />
+      <transition id="t_Notify Result Appeal to Offender_122">
+        <name>
+          <text>Notify Result Appeal to Offender</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 26 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q175_to_t_Notify Result Appeal to Offender_122" source="p_q175" target="t_Notify Result Appeal to Offender_122" />
+      <arc id="arc_t_Notify Result Appeal to Offender_122_to_p_q10" source="t_Notify Result Appeal to Offender_122" target="p_q10" />
+      <transition id="t_Payment_123">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&gt;= (+ 82 (* -1 article)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q78_to_t_Payment_123" source="p_q78" target="t_Payment_123" />
+      <arc id="arc_t_Payment_123_to_p_q10" source="t_Payment_123" target="p_q10" />
+      <transition id="t_Add penalty_124">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="amount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q48_to_t_Add penalty_124" source="p_q48" target="t_Add penalty_124" />
+      <arc id="arc_t_Add penalty_124_to_p_q105" source="t_Add penalty_124" target="p_q105" />
+      <transition id="t_Payment_125">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 68841/100 (* -1 amount)) 0)</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q62_to_t_Payment_125" source="p_q62" target="t_Payment_125" />
+      <arc id="arc_t_Payment_125_to_p_q192" source="t_Payment_125" target="p_q192" />
+      <transition id="t_Payment_126">
+        <name>
+          <text>Payment</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="paymentAmount">dismissal</update>
+          <update variable="totalPaymentAmount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q119_to_t_Payment_126" source="p_q119" target="t_Payment_126" />
+      <arc id="arc_t_Payment_126_to_p_q101" source="t_Payment_126" target="p_q101" />
+      <transition id="t_Insert Date Appeal to Prefecture_127">
+        <name>
+          <text>Insert Date Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>(&lt; (+ 451/20 (* -1 expense)) 0)</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q37_to_t_Insert Date Appeal to Prefecture_127" source="p_q37" target="t_Insert Date Appeal to Prefecture_127" />
+      <arc id="arc_t_Insert Date Appeal to Prefecture_127_to_p_q218" source="t_Insert Date Appeal to Prefecture_127" target="p_q218" />
+      <transition id="t_Send Appeal to Prefecture_128">
+        <name>
+          <text>Send Appeal to Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q218_to_t_Send Appeal to Prefecture_128" source="p_q218" target="t_Send Appeal to Prefecture_128" />
+      <arc id="arc_t_Send Appeal to Prefecture_128_to_p_q219" source="t_Send Appeal to Prefecture_128" target="p_q219" />
+      <transition id="t_Add penalty_129">
+        <name>
+          <text>Add penalty</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="amount">dismissal</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q219_to_t_Add penalty_129" source="p_q219" target="t_Add penalty_129" />
+      <arc id="arc_t_Add penalty_129_to_p_q220" source="t_Add penalty_129" target="p_q220" />
+      <transition id="t_Receive Result Appeal from Prefecture_130">
+        <name>
+          <text>Receive Result Appeal from Prefecture</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_q220_to_t_Receive Result Appeal from Prefecture_130" source="p_q220" target="t_Receive Result Appeal from Prefecture_130" />
+      <arc id="arc_t_Receive Result Appeal from Prefecture_130_to_p_q197" source="t_Receive Result Appeal from Prefecture_130" target="p_q197" />
+    </page>
+    <toolspecific tool="dpn-discovery" version="1.0">
+      <variable name="amount" />
+      <variable name="article" />
+      <variable name="dismissal" />
+      <variable name="expense" />
+      <variable name="lastSent" />
+      <variable name="matricola" />
+      <variable name="notificationType" />
+      <variable name="paymentAmount" />
+      <variable name="points" />
+      <variable name="totalPaymentAmount" />
+      <variable name="vehicleClass" />
+    </toolspecific>
+  </net>
+</pnml>

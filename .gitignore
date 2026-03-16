@@ -1,13 +1,14 @@
-.venv
+# General Python and environment ignores
+.venv/
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
+*.py[cod]
 env/
-
 .pytest_cache/
 *.egg-info/
 
-
+# Specific Documentation ignores
 /docs/formal_problem_definition.md
+/docs/Walkinshaw\ et\ al.\ -\ 2013\ -\ Inferring\ Extended\ Finite\ State\ Machine\ models\ from\ software\ executions
+/docs/Lee\ et\ al.\ -\ Accelerating\ Search-Based\ Program\ Synthesis\ using\ Learned\ Probabilistic\ Models
+/docs/Reynolds\ et\ al.\ -\ Scalable\ Algorithms\ for\ Abduction\ via\ Enumerative\ Syntax-Guided\ Synthesis
+/docs/Nguyen\ et\ al.\ -\ Synthesizing\ Java\ Expressions\ from\ Free-Form\ Queries

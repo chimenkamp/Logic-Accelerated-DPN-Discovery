@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal, Optional
 
-import z3
+from dpn_discovery.smt import get_solver, SMTBool, SMTExpr
 
 try:
     import graphviz  # type: ignore[import-untyped]
@@ -93,22 +93,24 @@ class VisualizerSettings:
 # Helpers
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _guard_str(formula: Optional[z3.BoolRef]) -> str:
-    """Return a human-readable string for a Z3 guard formula."""
+def _guard_str(formula: Optional[SMTBool]) -> str:
+    """Return a human-readable string for an SMT guard formula."""
     if formula is None:
         return "True"
-    s = str(formula)
-    # Z3 uses 'And(…)' / 'Or(…)'; simplify common cases.
+    smt = get_solver()
+    s = smt.expr_to_string(formula)
+    # Solvers may use 'And(…)' / 'Or(…)'; simplify common cases.
     return s
 
 
-def _update_str(update_rule: Optional[dict[str, z3.ExprRef]]) -> str:
+def _update_str(update_rule: Optional[dict[str, SMTExpr]]) -> str:
     """Return a compact string for an update rule."""
     if not update_rule:
         return ""
+    smt = get_solver()
     parts: list[str] = []
     for var, expr in sorted(update_rule.items()):
-        parts.append(f"{var}' := {expr}")
+        parts.append(f"{var}' := {smt.expr_to_string(expr)}")
     return "\n".join(parts)
 
 

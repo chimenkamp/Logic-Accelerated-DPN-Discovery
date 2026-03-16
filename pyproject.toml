@@ -18,6 +18,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+cvc5 = [
+    "cvc5>=1.2",
+]
+yices2 = [
+    "yices>=1.1.4",
+]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",

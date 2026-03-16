@@ -23,11 +23,14 @@ References
 from __future__ import annotations
 
 import heapq
+import logging
 import math
 from dataclasses import dataclass, field
 from typing import Any
 
-import z3
+from dpn_discovery.smt import get_solver, SMTSolver, SMTBool, SMTArith, SatResult
+
+logger = logging.getLogger(__name__)
 
 from dpn_discovery.models import EFSM, Transition
 
@@ -48,23 +51,23 @@ class GuardNode:
         """Number of AST nodes (proxy for formula complexity)."""
         return 1 + sum(c.size() for c in self.children)
 
-    def to_z3(self, z3_vars: dict[str, z3.ArithRef]) -> z3.BoolRef:
-        """Compile this AST into a Z3 Boolean expression."""
+    def to_smt(self, smt_vars: dict[str, SMTArith], solver: SMTSolver) -> SMTBool:
+        """Compile this AST into an SMT Boolean expression."""
         match self.kind:
             case "leq":
-                return z3_vars[self.variable] <= z3.RealVal(self.constant)  # type: ignore[arg-type]
+                return solver.LE(smt_vars[self.variable], solver.RealVal(self.constant))
             case "gt":
-                return z3_vars[self.variable] > z3.RealVal(self.constant)  # type: ignore[arg-type]
+                return solver.GT(smt_vars[self.variable], solver.RealVal(self.constant))
             case "eq":
-                return z3_vars[self.variable] == z3.RealVal(self.constant)  # type: ignore[arg-type]
+                return solver.Eq(smt_vars[self.variable], solver.RealVal(self.constant))
             case "and":
-                return z3.And(*(c.to_z3(z3_vars) for c in self.children))
+                return solver.And(*(c.to_smt(smt_vars, solver) for c in self.children))
             case "or":
-                return z3.Or(*(c.to_z3(z3_vars) for c in self.children))
+                return solver.Or(*(c.to_smt(smt_vars, solver) for c in self.children))
             case "not":
-                return z3.Not(self.children[0].to_z3(z3_vars))
+                return solver.Not(self.children[0].to_smt(smt_vars, solver))
             case "true":
-                return z3.BoolVal(True)
+                return solver.BoolVal(True)
             case _:
                 raise ValueError(f"Unknown guard node kind: {self.kind}")
 
@@ -265,7 +268,7 @@ def _search_guard(
         node = heapq.heappop(heap)
         visited += 1
 
-        if _verify_guard_z3(node.candidate, positive, negative, variables):
+        if _verify_guard(node.candidate, positive, negative, variables):
             # Update PHOG model with successful derivation.
             phog.observe(ctx_root, node.candidate.kind)
             return node.candidate
@@ -306,7 +309,7 @@ def _search_guard(
 # 5.  Z3-based verification  (coverage + disjointness)
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _verify_guard_z3(
+def _verify_guard(
     guard: GuardNode,
     positive: list[dict[str, Any]],
     negative: list[dict[str, Any]],
@@ -317,41 +320,42 @@ def _verify_guard_z3(
     1. **Coverage**:  ∀ d ∈ positive:  guard(d) = True.
     2. **Exclusion**: ∀ d ∈ negative:  guard(d) = False.
 
-    All checking is delegated to Z3 (spec §6 constraint 3).
+    All checking is delegated to the SMT solver (spec §6 constraint 3).
     """
-    z3_vars = {v: z3.Real(v) for v in variables}
-    solver = z3.Solver()
-    solver.set("timeout", 3000)
+    smt = get_solver()
+    smt_vars = {v: smt.Real(v) for v in variables}
 
-    guard_expr = guard.to_z3(z3_vars)
+    with smt.create_context(timeout_ms=3000) as ctx:
+        guard_expr = guard.to_smt(smt_vars, smt)
 
-    # Coverage: guard must be True for every positive sample.
-    for sample in positive:
-        substituted = _substitute(guard_expr, z3_vars, sample)
-        solver.add(substituted)
+        # Coverage: guard must be True for every positive sample.
+        for sample in positive:
+            substituted = _substitute(guard_expr, smt_vars, sample)
+            ctx.add(substituted)
 
-    # Exclusion: guard must be False for every negative sample.
-    for sample in negative:
-        substituted = _substitute(guard_expr, z3_vars, sample)
-        solver.add(z3.Not(substituted))
+        # Exclusion: guard must be False for every negative sample.
+        for sample in negative:
+            substituted = _substitute(guard_expr, smt_vars, sample)
+            ctx.add(smt.Not(substituted))
 
-    return solver.check() == z3.sat
+        return ctx.check() == SatResult.SAT
 
 
 def _substitute(
-    expr: z3.BoolRef,
-    z3_vars: dict[str, z3.ArithRef],
+    expr: SMTBool,
+    smt_vars: dict[str, SMTArith],
     sample: dict[str, Any],
-) -> z3.BoolRef:
-    """Replace every Z3 variable in *expr* with its concrete
+) -> SMTBool:
+    """Replace every SMT variable in *expr* with its concrete
     value from *sample*.
     """
+    smt = get_solver()
     substitutions = [
-        (z3_vars[v], z3.RealVal(sample[v]))
-        for v in z3_vars
+        (smt_vars[v], smt.RealVal(sample[v]))
+        for v in smt_vars
         if v in sample and isinstance(sample[v], (int, float))
     ]
-    return z3.substitute(expr, *substitutions)  # type: ignore[return-value]
+    return smt.substitute(expr, *substitutions)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -379,8 +383,13 @@ def synthesise_guards(efsm: EFSM) -> EFSM:
     efsm = efsm.deep_copy()
     phog = PHOGModel()
     variables = sorted(efsm.variables)
+    states_sorted = sorted(efsm.states)
+    total_states = len(states_sorted)
 
-    for state in sorted(efsm.states):
+    logger.info("Guard synthesis: %d states, %d transitions, %d variables",
+                total_states, len(efsm.transitions), len(variables))
+
+    for state_idx, state in enumerate(states_sorted, 1):
         outgoing = efsm.outgoing(state)
         if not outgoing:
             continue
@@ -390,6 +399,8 @@ def synthesise_guards(efsm: EFSM) -> EFSM:
         # --- Case 1: same-activity competition ---
         for activity, transitions in by_activity.items():
             if len(transitions) >= 2:
+                logger.info("  [%d/%d] State %s: synthesising guards for %d competing '%s' transitions",
+                            state_idx, total_states, state, len(transitions), activity)
                 _synthesise_competing_guards(transitions, variables, phog)
 
         # --- Case 2: pairwise cross-activity decision points ---
@@ -402,6 +413,8 @@ def synthesise_guards(efsm: EFSM) -> EFSM:
             if all(t.guard_formula is None for t in ts)
         ]
         if len(unguarded_activities) >= 2:
+            logger.info("  [%d/%d] State %s: pairwise cross-activity guards for %s",
+                        state_idx, total_states, state, unguarded_activities)
             _synthesise_pairwise_activity_guards(
                 by_activity, unguarded_activities, variables, phog
             )
@@ -409,7 +422,7 @@ def synthesise_guards(efsm: EFSM) -> EFSM:
         # --- Assign ⊤ to any transition still without a guard ---
         for t in outgoing:
             if t.guard_formula is None:
-                t.guard_formula = z3.BoolVal(True)
+                t.guard_formula = get_solver().BoolVal(True)
 
     return efsm
 
@@ -473,9 +486,10 @@ def _synthesise_pairwise_activity_guards(
         guard_node = _search_guard(positive, negative, variables, phog)
 
         if guard_node is not None:
-            z3_vars = {v: z3.Real(v) for v in variables}
-            guard_expr = guard_node.to_z3(z3_vars)
-            neg_guard_expr = z3.Not(guard_expr)
+            smt = get_solver()
+            smt_vars = {v: smt.Real(v) for v in variables}
+            guard_expr = guard_node.to_smt(smt_vars, smt)
+            neg_guard_expr = smt.Not(guard_expr)
 
             for t in ts_a:
                 if t.guard_formula is None:
@@ -507,14 +521,15 @@ def _synthesise_competing_guards(
                 negative.extend(_guard_samples(t_j))
 
         if not positive:
-            t_i.guard_formula = z3.BoolVal(True)
+            t_i.guard_formula = get_solver().BoolVal(True)
             continue
 
         guard_node = _search_guard(positive, negative, variables, phog)
 
         if guard_node is not None:
-            z3_vars = {v: z3.Real(v) for v in variables}
-            t_i.guard_formula = guard_node.to_z3(z3_vars)
+            smt = get_solver()
+            smt_vars = {v: smt.Real(v) for v in variables}
+            t_i.guard_formula = guard_node.to_smt(smt_vars, smt)
         else:
             # Fallback: unconstrained guard (best-effort).
-            t_i.guard_formula = z3.BoolVal(True)
+            t_i.guard_formula = get_solver().BoolVal(True)

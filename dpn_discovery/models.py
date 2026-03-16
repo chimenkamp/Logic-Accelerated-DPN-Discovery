@@ -11,9 +11,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
+import random
 from typing import Any, Optional
 
-import z3
+from dpn_discovery.smt import SMTBool, SMTExpr
 
 
 # ---------------------------------------------------------------------------
@@ -70,6 +71,17 @@ class EventLog:
     activities: set[str] = field(default_factory=set)
     variables: set[str] = field(default_factory=set)
 
+    def sample(self, ratio: float) -> EventLog:
+        """Return a new EventLog with a random sample of traces."""
+        
+        sample_size = int(len(self.traces) * ratio)
+        sampled_traces = random.sample(self.traces, sample_size)
+
+        return EventLog(
+            traces=sampled_traces,
+            activities=self.activities,
+            variables=self.variables,
+        )   
 
 # ---------------------------------------------------------------------------
 # §2.2  Extended Finite State Machine (EFSM)
@@ -104,8 +116,8 @@ class Transition:
     activity: str
     data_samples: list[dict[str, Any]] = field(default_factory=list)
     pre_post_pairs: list[tuple[dict[str, Any], dict[str, Any]]] = field(default_factory=list)
-    guard_formula: Optional[z3.BoolRef] = None
-    update_rule: Optional[dict[str, z3.ExprRef]] = None
+    guard_formula: Optional[SMTBool] = None
+    update_rule: Optional[dict[str, SMTExpr]] = None
 
 
 @dataclass(slots=True)
@@ -194,8 +206,8 @@ class DPNTransition:
     """
 
     name: str
-    guard: Optional[z3.BoolRef] = None
-    update_rule: Optional[dict[str, z3.ExprRef]] = None
+    guard: Optional[SMTBool] = None
+    update_rule: Optional[dict[str, SMTExpr]] = None
     input_places: set[str] = field(default_factory=set)
     output_places: set[str] = field(default_factory=set)
 

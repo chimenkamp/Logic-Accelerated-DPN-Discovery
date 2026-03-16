@@ -1,6 +1,6 @@
 """Smoke tests for symbolic guard-based candidate pruning."""
 
-import z3
+from dpn_discovery.smt import get_solver
 
 from dpn_discovery.postcondition_synthesis import (
     ExprNode,
@@ -11,18 +11,20 @@ from dpn_discovery.postcondition_synthesis import (
 )
 
 def test_trivial_guard_detection() -> None:
+    smt = get_solver()
     assert _is_trivial_guard(None) is True
-    assert _is_trivial_guard(z3.BoolVal(True)) is True
-    x = z3.Real("x")
-    assert _is_trivial_guard(x > 0) is False
-    assert _is_trivial_guard(x == z3.RealVal(0)) is False
+    assert _is_trivial_guard(smt.BoolVal(True)) is True
+    x = smt.Real("x")
+    assert _is_trivial_guard(smt.GT(x, smt.RealVal(0))) is False
+    assert _is_trivial_guard(smt.Eq(x, smt.RealVal(0))) is False
 
 
 def test_equivalence_under_equality_guard() -> None:
     """Under  x = 0,  the expressions 'x' and '0' are equivalent."""
+    smt = get_solver()
     variables = ["x"]
-    x = z3.Real("x")
-    guard = x == z3.RealVal(0)
+    x = smt.Real("x")
+    guard = smt.Eq(x, smt.RealVal(0))
 
     e_x = ExprNode(kind="var", var_name="x")
     e_0 = ExprNode(kind="const", value=0)
@@ -35,9 +37,10 @@ def test_equivalence_under_equality_guard() -> None:
 def test_equivalence_under_range_guard() -> None:
     """Under  x > 5,  'x + 0' and 'x' are equivalent (always true),
     but 'x' and '0' are NOT equivalent."""
+    smt = get_solver()
     variables = ["x"]
-    x = z3.Real("x")
-    guard = x > z3.RealVal(5)
+    x = smt.Real("x")
+    guard = smt.GT(x, smt.RealVal(5))
 
     e_x = ExprNode(kind="var", var_name="x")
     e_0 = ExprNode(kind="const", value=0)
@@ -49,9 +52,10 @@ def test_equivalence_under_range_guard() -> None:
 
 def test_pruning_reduces_candidates() -> None:
     """Under  x = 0,  many depth-2 candidates collapse."""
+    smt = get_solver()
     variables = ["x"]
-    x = z3.Real("x")
-    guard = x == z3.RealVal(0)
+    x = smt.Real("x")
+    guard = smt.Eq(x, smt.RealVal(0))
 
     all_candidates = _enumerate_candidates(variables, max_depth=2)
     pruned = _prune_candidates_with_guard(all_candidates, guard, variables)
@@ -66,9 +70,10 @@ def test_pruning_reduces_candidates() -> None:
 
 def test_pruning_preserves_order() -> None:
     """Pruning must keep the first (simplest) representative."""
+    smt = get_solver()
     variables = ["x"]
-    x = z3.Real("x")
-    guard = x == z3.RealVal(0)
+    x = smt.Real("x")
+    guard = smt.Eq(x, smt.RealVal(0))
 
     all_candidates = _enumerate_candidates(variables, max_depth=2)
     pruned = _prune_candidates_with_guard(all_candidates, guard, variables)
@@ -83,8 +88,9 @@ def test_pruning_preserves_order() -> None:
 def test_no_pruning_with_trivial_guard() -> None:
     """Trivial guard (True) should be skipped by the caller,
     but _prune_candidates_with_guard itself still works."""
+    smt = get_solver()
     variables = ["x"]
-    guard = z3.BoolVal(True)
+    guard = smt.BoolVal(True)
 
     all_candidates = _enumerate_candidates(variables, max_depth=2)
     pruned = _prune_candidates_with_guard(all_candidates, guard, variables)

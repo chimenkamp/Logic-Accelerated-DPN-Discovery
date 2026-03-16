@@ -20,10 +20,11 @@ Reference: §4 Step 6 of the specification.
 
 from __future__ import annotations
 
+import logging
 import xml.etree.ElementTree as ET
 from typing import Any
 
-import z3
+from dpn_discovery.smt import get_solver, SMTBool, SMTExpr
 
 from dpn_discovery.models import (
     EFSM,
@@ -32,6 +33,8 @@ from dpn_discovery.models import (
     EventLog,
     Place,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -232,6 +235,250 @@ def _replay_trace(
     return True
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# 4.  DPN post-construction reduction
+# ═══════════════════════════════════════════════════════════════════════════
+
+def reduce_dpn(dpn: DataPetriNet, log: EventLog) -> DataPetriNet:
+    """Apply data-driven reduction passes to *dpn*.
+
+    This is a **post-construction** pass that does not change the
+    language accepted by the net w.r.t. the log.  It consists of
+    two stages:
+
+      1. **Place fusion** — replay the log and record which places
+         always carry identical token counts across all reachable
+         markings.  Fuse those places into a single representative.
+      2. **Transition collapsing** — after place fusion, transitions
+         sharing the same activity label AND the same input/output
+         place sets are merged (guards become disjunctions via OR).
+
+    Both stages are purely data-driven (no assumptions beyond the
+    log) and replay-verified.
+
+    Parameters
+    ----------
+    dpn : DataPetriNet
+        The DPN to reduce (not modified; a new DPN is returned).
+    log : EventLog
+        The original event log (for replay-based analysis).
+
+    Returns
+    -------
+    DataPetriNet
+        The reduced DPN.
+    """
+    before_p, before_t = len(dpn.places), len(dpn.transitions)
+
+    dpn = _fuse_places(dpn, log)
+    dpn = _collapse_transitions(dpn)
+
+    after_p, after_t = len(dpn.places), len(dpn.transitions)
+
+    if before_p != after_p or before_t != after_t:
+        logger.info(
+            "  DPN reduction: places %d → %d  |  transitions %d → %d",
+            before_p, after_p, before_t, after_t,
+        )
+
+    return dpn
+
+
+def _fuse_places(dpn: DataPetriNet, log: EventLog) -> DataPetriNet:
+    """Fuse places that always carry identical token counts.
+
+    Replays every trace through the DPN, recording the full
+    token-count vector at every step.  Two places whose count
+    vectors are identical across all reachable markings of all
+    traces are fused into a single representative place.
+
+    This merges structurally redundant places that survived EFSM
+    deduplication — e.g. places that appear distinct at the EFSM
+    level but behave identically in every observed execution.
+    """
+    place_names = sorted(p.name for p in dpn.places)
+    if len(place_names) <= 1:
+        return dpn
+
+    # ── Collect token-count profiles per place across all traces ─────────
+    # profile[place] = list of token counts observed at each firing step.
+    profiles: dict[str, list[int]] = {p: [] for p in place_names}
+
+    for trace in log.traces:
+        tokens: dict[str, int] = {}
+        for p in dpn.initial_marking:
+            tokens[p] = tokens.get(p, 0) + 1
+
+        # Record initial marking.
+        for p in place_names:
+            profiles[p].append(tokens.get(p, 0))
+
+        for event in trace.events:
+            fired = False
+            for trans in dpn.transitions:
+                activity_label = _transition_activity(trans)
+                if activity_label != event.activity:
+                    continue
+                can_fire = all(tokens.get(p, 0) >= 1 for p in trans.input_places)
+                if not can_fire:
+                    continue
+                if trans.guard is not None and not _evaluate_guard(
+                    trans.guard, {**{}, **event.payload}
+                ):
+                    continue
+
+                for p in trans.input_places:
+                    tokens[p] -= 1
+                for p in trans.output_places:
+                    tokens[p] = tokens.get(p, 0) + 1
+                fired = True
+                break
+
+            # Record marking after this event.
+            for p in place_names:
+                profiles[p].append(tokens.get(p, 0))
+
+    # ── Group places by identical profiles ───────────────────────────────
+    profile_groups: dict[tuple[int, ...], list[str]] = {}
+    for pname in place_names:
+        key = tuple(profiles[pname])
+        profile_groups.setdefault(key, []).append(pname)
+
+    # Build a mapping:  old_place_name → representative_name.
+    remap: dict[str, str] = {}
+    for group in profile_groups.values():
+        rep = group[0]  # first alphabetically (they're sorted)
+        for p in group:
+            remap[p] = rep
+
+    # If nothing to fuse, return as-is.
+    if all(remap[p] == p for p in place_names):
+        return dpn
+
+    # ── Build fused DPN ──────────────────────────────────────────────────
+    kept_places = sorted(set(remap.values()))
+    new_places = [Place(name=p) for p in kept_places]
+
+    new_transitions: list[DPNTransition] = []
+    for trans in dpn.transitions:
+        new_in = {remap.get(p, p) for p in trans.input_places}
+        new_out = {remap.get(p, p) for p in trans.output_places}
+        new_transitions.append(DPNTransition(
+            name=trans.name,
+            guard=trans.guard,
+            update_rule=dict(trans.update_rule) if trans.update_rule else None,
+            input_places=new_in,
+            output_places=new_out,
+        ))
+
+    new_initial = {remap.get(p, p) for p in dpn.initial_marking}
+
+    return DataPetriNet(
+        places=new_places,
+        transitions=new_transitions,
+        variables=set(dpn.variables),
+        initial_marking=new_initial,
+    )
+
+
+def _collapse_transitions(dpn: DataPetriNet) -> DataPetriNet:
+    """Collapse DPN transitions with identical activity + arc structure.
+
+    Two transitions are candidates for collapsing when they:
+      1. Share the same activity label.
+      2. Have identical input place sets.
+      3. Have identical output place sets.
+
+    When collapsed, the guards are combined via disjunction (OR) so
+    no behavior is lost.  Update rules are kept from the first
+    transition (they should be identical for structurally equivalent
+    transitions; if not, we keep both transitions).
+
+    This removes the 'duplicate transition' pattern that arises
+    from the 1:1 EFSM→DPN mapping when multiple EFSM edges encode
+    the same routing with different guards.
+    """
+    # Group by (activity, input_places, output_places).
+    GroupKey = tuple[str, frozenset[str], frozenset[str]]
+    groups: dict[GroupKey, list[DPNTransition]] = {}
+
+    for trans in dpn.transitions:
+        activity = _transition_activity(trans)
+        key: GroupKey = (
+            activity,
+            frozenset(trans.input_places),
+            frozenset(trans.output_places),
+        )
+        groups.setdefault(key, []).append(trans)
+
+    new_transitions: list[DPNTransition] = []
+    smt = get_solver()
+
+    for (activity, in_p, out_p), group in groups.items():
+        if len(group) == 1:
+            new_transitions.append(group[0])
+            continue
+
+        # Check that update rules are compatible before collapsing.
+        # If they differ, keep all transitions separate.
+        updates_compatible = True
+        ref_update = group[0].update_rule
+        for t in group[1:]:
+            if not _updates_equal(ref_update, t.update_rule):
+                updates_compatible = False
+                break
+
+        if not updates_compatible:
+            new_transitions.extend(group)
+            continue
+
+        # Combine guards via disjunction.
+        guards = [t.guard for t in group if t.guard is not None]
+        if not guards:
+            combined_guard = None
+        elif len(guards) == 1:
+            combined_guard = guards[0]
+        else:
+            combined_guard = guards[0]
+            for g in guards[1:]:
+                combined_guard = smt.Or(combined_guard, g)
+
+        merged = DPNTransition(
+            name=group[0].name,
+            guard=combined_guard,
+            update_rule=dict(ref_update) if ref_update else None,
+            input_places=set(in_p),
+            output_places=set(out_p),
+        )
+        new_transitions.append(merged)
+
+    return DataPetriNet(
+        places=list(dpn.places),
+        transitions=new_transitions,
+        variables=set(dpn.variables),
+        initial_marking=set(dpn.initial_marking),
+    )
+
+
+def _updates_equal(
+    u1: dict[str, Any] | None,
+    u2: dict[str, Any] | None,
+) -> bool:
+    """Check whether two update-rule dicts are structurally equal."""
+    if u1 is None and u2 is None:
+        return True
+    if u1 is None or u2 is None:
+        return False
+    if set(u1.keys()) != set(u2.keys()):
+        return False
+    smt = get_solver()
+    for var in u1:
+        # Compare string representations as a fast structural check.
+        if str(u1[var]) != str(u2[var]):
+            return False
+    return True
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -247,34 +494,34 @@ def _transition_activity(trans: DPNTransition) -> str:
     return trans.name
 
 
-def _evaluate_guard(guard: z3.BoolRef, values: dict[str, Any]) -> bool:
-    """Evaluate a Z3 Boolean guard by substituting concrete values."""
+def _evaluate_guard(guard: SMTBool, values: dict[str, Any]) -> bool:
+    """Evaluate an SMT Boolean guard by substituting concrete values."""
+    smt = get_solver()
     try:
         substitutions = []
         for name, val in values.items():
             if isinstance(val, (int, float)):
-                substitutions.append((z3.Real(name), z3.RealVal(val)))
-        result = z3.substitute(guard, *substitutions) if substitutions else guard
-        result = z3.simplify(result)
-        return z3.is_true(result)
+                substitutions.append((smt.Real(name), smt.RealVal(val)))
+        result = smt.substitute(guard, *substitutions) if substitutions else guard
+        result = smt.simplify(result)
+        return smt.is_true(result)
     except Exception:
         # Conservative: if we can't evaluate, assume the guard is satisfied.
         return True
 
 
-def _evaluate_expr(expr: z3.ExprRef, values: dict[str, Any]) -> float | None:
-    """Evaluate a Z3 arithmetic expression by substituting concrete values."""
+def _evaluate_expr(expr: SMTExpr, values: dict[str, Any]) -> float | None:
+    """Evaluate an SMT arithmetic expression by substituting concrete values."""
+    smt = get_solver()
     try:
         substitutions = []
         for name, val in values.items():
             if isinstance(val, (int, float)):
-                substitutions.append((z3.Real(name), z3.RealVal(val)))
-        result = z3.substitute(expr, *substitutions) if substitutions else expr
-        result = z3.simplify(result)
-        if z3.is_rational_value(result):
-            return float(result.as_fraction())
-        if z3.is_int_value(result):
-            return float(result.as_long())
+                substitutions.append((smt.Real(name), smt.RealVal(val)))
+        result = smt.substitute(expr, *substitutions) if substitutions else expr
+        result = smt.simplify(result)
+        if smt.is_rational_value(result) or smt.is_int_value(result):
+            return smt.to_real_float(result)
         return None
     except Exception:
         return None

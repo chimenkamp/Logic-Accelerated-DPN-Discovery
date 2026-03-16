@@ -30,7 +30,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-import z3
+from dpn_discovery.smt import get_solver, SMTSolver, SMTBool, SMTArith, SMTExpr, SatResult
 
 from dpn_discovery.models import EFSM, Transition
 
@@ -52,19 +52,28 @@ class ExprNode:
     def size(self) -> int:
         return 1 + sum(c.size() for c in self.children)
 
-    def to_z3(self, z3_vars: dict[str, z3.ArithRef]) -> z3.ArithRef:
-        """Compile to Z3 arithmetic expression."""
+    def to_smt(self, smt_vars: dict[str, SMTArith], solver: SMTSolver) -> SMTArith:
+        """Compile to an SMT arithmetic expression."""
         match self.kind:
             case "const":
-                return z3.RealVal(self.value)  # type: ignore[arg-type]
+                return solver.RealVal(self.value)
             case "var":
-                return z3_vars[self.var_name]  # type: ignore[index]
+                return smt_vars[self.var_name]
             case "add":
-                return self.children[0].to_z3(z3_vars) + self.children[1].to_z3(z3_vars)
+                return solver.Add(
+                    self.children[0].to_smt(smt_vars, solver),
+                    self.children[1].to_smt(smt_vars, solver),
+                )
             case "sub":
-                return self.children[0].to_z3(z3_vars) - self.children[1].to_z3(z3_vars)
+                return solver.Sub(
+                    self.children[0].to_smt(smt_vars, solver),
+                    self.children[1].to_smt(smt_vars, solver),
+                )
             case "mul":
-                return self.children[0].to_z3(z3_vars) * self.children[1].to_z3(z3_vars)
+                return solver.Mul(
+                    self.children[0].to_smt(smt_vars, solver),
+                    self.children[1].to_smt(smt_vars, solver),
+                )
             case _:
                 raise ValueError(f"Unknown expression kind: {self.kind}")
 
@@ -136,54 +145,7 @@ def _enumerate_candidates(
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 3.  Template-based synthesis with Z3  (spec §4 Step 5)
-# ═══════════════════════════════════════════════════════════════════════════
-
-def _synthesise_update_template(
-    var: str,
-    pre_post_pairs: list[tuple[dict[str, Any], dict[str, Any]]],
-    variables: list[str],
-) -> z3.ExprRef | None:
-    """Try the explicit template  x' = c₁·x + c₂  first (spec §4 Step 5).
-
-    This is faster than full enumeration for the common linear case
-    and directly implements the spec's suggested template.
-    """
-    if not pre_post_pairs:
-        return None
-
-    c1 = z3.Real(f"_c1_{var}")
-    c2 = z3.Real(f"_c2_{var}")
-    solver = z3.Solver()
-    solver.set("timeout", 5000)
-
-    n_constraints = 0
-    for pre, post in pre_post_pairs:
-        if var not in pre or var not in post:
-            continue
-        if not isinstance(pre[var], (int, float)) or not isinstance(post[var], (int, float)):
-            continue
-
-        x_in = z3.RealVal(pre[var])
-        x_out = z3.RealVal(post[var])
-        solver.add(x_out == c1 * x_in + c2)
-        n_constraints += 1
-
-    if n_constraints == 0:
-        return None
-
-    if solver.check() == z3.sat:
-        model = solver.model()
-        c1_val = model.eval(c1, model_completion=True)
-        c2_val = model.eval(c2, model_completion=True)
-        x_var = z3.Real(var)
-        return c1_val * x_var + c2_val  # type: ignore[return-value]
-
-    return None
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-# 4.  GetAbductUCL — enumerative abduction with UNSAT-core learning
+# 3.  GetAbductUCL — enumerative abduction with UNSAT-core learning
 #     (Reynolds et al., §4)
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -218,10 +180,10 @@ def _deduplicate_pairs(
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 4b.  Symbolic guard-based candidate pruning
+# 3b.  Symbolic guard-based candidate pruning
 # ═══════════════════════════════════════════════════════════════════════════
 
-def _is_trivial_guard(guard: z3.BoolRef | None) -> bool:
+def _is_trivial_guard(guard: SMTBool | None) -> bool:
     """Return True if *guard* is ``None`` or syntactically ``True``.
 
     A trivial guard provides no symbolic constraints, so pruning
@@ -229,13 +191,14 @@ def _is_trivial_guard(guard: z3.BoolRef | None) -> bool:
     """
     if guard is None:
         return True
-    return z3.is_true(z3.simplify(guard))
+    smt = get_solver()
+    return smt.is_true(smt.simplify(guard))
 
 
 def _are_equivalent_under_guard(
     e1: ExprNode,
     e2: ExprNode,
-    guard: z3.BoolRef,
+    guard: SMTBool,
     variables: list[str],
     timeout_ms: int = 500,
 ) -> bool:
@@ -247,24 +210,23 @@ def _are_equivalent_under_guard(
 
     i.e.  g(V) ⊨ e₁(V) = e₂(V).
     """
-    z3_vars = {v: z3.Real(v) for v in variables}
-    expr1 = e1.to_z3(z3_vars)
-    expr2 = e2.to_z3(z3_vars)
+    smt = get_solver()
+    smt_vars = {v: smt.Real(v) for v in variables}
+    expr1 = e1.to_smt(smt_vars, smt)
+    expr2 = e2.to_smt(smt_vars, smt)
 
-    solver = z3.Solver()
-    solver.set("timeout", timeout_ms)
+    with smt.create_context(timeout_ms=timeout_ms) as ctx:
+        # Assert: guard holds AND the two expressions differ.
+        # If UNSAT → they are always equal under the guard.
+        ctx.add(guard)
+        ctx.add(smt.NEq(expr1, expr2))
 
-    # Assert: guard holds AND the two expressions differ.
-    # If UNSAT → they are always equal under the guard.
-    solver.add(guard)
-    solver.add(expr1 != expr2)
-
-    return solver.check() == z3.unsat
+        return ctx.check() == SatResult.UNSAT
 
 
 def _prune_candidates_with_guard(
     candidates: list[ExprNode],
-    guard: z3.BoolRef,
+    guard: SMTBool,
     variables: list[str],
 ) -> list[ExprNode]:
     """Remove candidates that are equivalent under *guard* to an earlier one.
@@ -307,7 +269,7 @@ def _get_abduct_ucl(
     var: str,
     pre_post_pairs: list[tuple[dict[str, Any], dict[str, Any]]],
     variables: list[str],
-    guard_formula: z3.BoolRef | None = None,
+    guard_formula: SMTBool | None = None,
     use_symbolic_pruning: bool = False,
 ) -> ExprNode | None:
     """Enumerative abduction (GetAbductUCL, Reynolds et al. §4).
@@ -332,7 +294,9 @@ def _get_abduct_ucl(
     2. **Size-increasing enumeration** — returning the first
        satisfying candidate guarantees a simplest-first result.
     """
-    # De-duplicate observations to speed up Z3 calls.
+    smt = get_solver()
+
+    # De-duplicate observations to speed up solver calls.
     unique_pairs = _deduplicate_pairs(var, pre_post_pairs, variables)
 
     candidates = _enumerate_candidates(variables, max_depth=2)
@@ -341,55 +305,77 @@ def _get_abduct_ucl(
     # When enabled and a non-trivial guard is available, collapse
     # candidates that are equivalent under the guard into a single
     # representative.  This reduces the number of expensive
-    # per-observation Z3 checks.
+    # per-observation solver checks.
     if use_symbolic_pruning and not _is_trivial_guard(guard_formula):
         candidates = _prune_candidates_with_guard(
             candidates, guard_formula, variables  # type: ignore[arg-type]
         )
 
-    for candidate in candidates:
-        # Build Z3 constraints.
-        z3_vars = {v: z3.Real(v) for v in variables}
-        solver = z3.Solver()
-        solver.set("timeout", 3000)
+    # ── Pre-check: skip if no observation has a numeric post-state ────
+    # If no pair has a numeric post-state value for *var*, every
+    # candidate trivially satisfies the (empty) abduction problem.
+    # This is logically sound: an empty set of constraints is
+    # vacuously satisfiable, so there is nothing to abduce.
+    has_numeric_post = any(
+        isinstance(post.get(var), (int, float))
+        for _, post in unique_pairs
+    )
+    if not has_numeric_post:
+        return None
 
-        valid = True
-        has_constraints = False
+    # ── Context-reuse loop ───────────────────────────────────────────
+    # Create ONE solver context and reset() between candidates
+    # instead of allocating / freeing a fresh context for each of
+    # the ~2 700 candidates.  This reduces native handle churn from
+    # O(|candidates| × |transitions|) to O(|transitions|).
+    smt_vars = {v: smt.Real(v) for v in variables}
 
-        for idx, (pre, post) in enumerate(unique_pairs):
-            if var not in post:
+    with smt.create_context(timeout_ms=3000) as ctx:
+        for candidate in candidates:
+            try:
+                ctx.reset()
+
+                valid = True
+                has_constraints = False
+
+                for pre, post in unique_pairs:
+                    if var not in post:
+                        continue
+                    if not isinstance(post[var], (int, float)):
+                        valid = False
+                        break
+
+                    has_constraints = True
+
+                    # Substitute pre-state values into candidate expression.
+                    expr = candidate.to_smt(smt_vars, smt)
+                    substitutions = [
+                        (smt_vars[v], smt.RealVal(pre[v]))
+                        for v in variables
+                        if v in pre and isinstance(pre[v], (int, float))
+                    ]
+                    if substitutions:
+                        expr = smt.substitute(expr, *substitutions)
+
+                    expected = smt.RealVal(post[var])
+                    ctx.add(smt.Eq(expr, expected))
+
+                if not valid or not has_constraints:
+                    continue
+
+                # Check satisfiability.
+                if ctx.check() == SatResult.SAT:
+                    return candidate
+            except Exception:
+                # Candidate produced a formula the solver cannot handle
+                # (e.g. non-linear arithmetic under QF_LRA).  Skip it.
                 continue
-            if not isinstance(post[var], (int, float)):
-                valid = False
-                break
-
-            has_constraints = True
-
-            # Substitute pre-state values into candidate expression.
-            expr = candidate.to_z3(z3_vars)
-            substitutions = [
-                (z3_vars[v], z3.RealVal(pre[v]))
-                for v in variables
-                if v in pre and isinstance(pre[v], (int, float))
-            ]
-            if substitutions:
-                expr = z3.substitute(expr, *substitutions)
-
-            expected = z3.RealVal(post[var])
-            solver.add(expr == expected)
-
-        if not valid or not has_constraints:
-            continue
-
-        # Check satisfiability.
-        if solver.check() == z3.sat:
-            return candidate
 
     return None
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 5.  Per-transition update synthesis
+# 4.  Per-transition update synthesis
 # ═══════════════════════════════════════════════════════════════════════════
 
 def _collect_pre_post_pairs(
@@ -436,10 +422,14 @@ def synthesise_postconditions(
 ) -> EFSM:
     """Annotate every transition in *efsm* with update rules.
 
-    Strategy (per specification §4 Step 5):
-      1. Try the fast template  x' = c₁·x + c₂  via Z3.
-      2. If that fails, fall back to GetAbductUCL (enumerative
-         abduction with UNSAT-core learning).
+    Strategy (per specification §4 Step 5, Reynolds et al. IJCAR 2020):
+      For each variable on each transition, run GetAbductUCL
+      (enumerative abduction) to find the simplest update
+      expression consistent with all observed pre/post pairs.
+
+    Variables that have no numeric post-state observations on a
+    transition are skipped (the abduction problem would be vacuously
+    satisfiable — nothing to abduce).
 
     Pre/post observation pairs are stored directly on each
     transition (populated during PTA construction and preserved
@@ -461,23 +451,36 @@ def synthesise_postconditions(
     """
     efsm = efsm.deep_copy()
     variables = sorted(efsm.variables)
+    smt = get_solver()
+    total_transitions = len(efsm.transitions)
 
-    for transition in efsm.transitions:
+    logger.info("Postcondition synthesis: %d transitions, %d variables",
+                total_transitions, len(variables))
+
+    for t_idx, transition in enumerate(efsm.transitions, 1):
         pre_post_pairs = transition.pre_post_pairs
 
         if not pre_post_pairs:
             continue
 
-        update_rule: dict[str, z3.ExprRef] = {}
+        logger.info("  [%d/%d] %s → %s (%s): %d observation pairs",
+                    t_idx, total_transitions, transition.source_id,
+                    transition.target_id, transition.activity,
+                    len(pre_post_pairs))
+
+        update_rule: dict[str, SMTExpr] = {}
 
         for var in variables:
-            # Attempt 1: template synthesis  x' = c₁x + c₂.
-            # result = _synthesise_update_template(var, pre_post_pairs, variables)
-            # if result is not None:
-            #     update_rule[var] = result
-            #     continue
+            # Skip variables that have no numeric post-state value
+            # in any observation.  The abduction problem is vacuously
+            # satisfiable in that case — nothing to abduce.
+            if not any(
+                isinstance(post.get(var), (int, float))
+                for _, post in pre_post_pairs
+            ):
+                continue
 
-            # Attempt 2: GetAbductUCL (Reynolds et al.)
+            # GetAbductUCL (Reynolds et al.)
             abduct = _get_abduct_ucl(
                 var,
                 pre_post_pairs,
@@ -486,8 +489,8 @@ def synthesise_postconditions(
                 use_symbolic_pruning=use_symbolic_pruning,
             )
             if abduct is not None:
-                z3_vars = {v: z3.Real(v) for v in variables}
-                update_rule[var] = abduct.to_z3(z3_vars)
+                smt_vars = {v: smt.Real(v) for v in variables}
+                update_rule[var] = abduct.to_smt(smt_vars, smt)
             # else: no update discovered → variable unchanged (identity).
 
         if update_rule:
