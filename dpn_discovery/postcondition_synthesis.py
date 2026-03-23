@@ -92,6 +92,33 @@ class ExprNode:
             case _:
                 return f"?{self.kind}"
 
+    def evaluate(self, sample: dict[str, Any]) -> float | None:
+        """Evaluate the expression under a concrete variable assignment.
+
+        Returns the numeric result, or ``None`` if a referenced
+        variable is missing or non-numeric in *sample*.
+        """
+        match self.kind:
+            case "const":
+                return float(self.value) if self.value is not None else None
+            case "var":
+                v = sample.get(self.var_name)
+                return float(v) if isinstance(v, (int, float)) else None
+            case "add":
+                a = self.children[0].evaluate(sample)
+                b = self.children[1].evaluate(sample)
+                return (a + b) if (a is not None and b is not None) else None
+            case "sub":
+                a = self.children[0].evaluate(sample)
+                b = self.children[1].evaluate(sample)
+                return (a - b) if (a is not None and b is not None) else None
+            case "mul":
+                a = self.children[0].evaluate(sample)
+                b = self.children[1].evaluate(sample)
+                return (a * b) if (a is not None and b is not None) else None
+            case _:
+                return None
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 2.  Expression grammar enumeration
@@ -100,6 +127,8 @@ class ExprNode:
 def _enumerate_candidates(
     variables: list[str],
     max_depth: int = 2,
+    data_driven_constants: set[int | float] | None = None,
+    target_variable: str | None = None,
 ) -> list[ExprNode]:
     """Enumerate candidate update expressions up to *max_depth*.
 
@@ -110,38 +139,111 @@ def _enumerate_candidates(
     strategy so the simplest (most general) hypothesis is tried
     first.
 
-    Level 0: constants  0, 1, −1
+    Level 0: constants  0, 1, −1  (+ data-driven deltas)
     Level 1: variables  x, y, …
     Level 2: x+1, x−1, 2*x, x+y, …
+
+    When *target_variable* is provided, depth-2 candidates that
+    reference the target variable are placed before those that do
+    not (self-referencing preference).  This avoids coincidental
+    cross-variable matches when a same-variable expression also
+    fits the data.
     """
-    constants = [
-        ExprNode(kind="const", value=0),
-        ExprNode(kind="const", value=1),
-        ExprNode(kind="const", value=-1),
-    ]
+    base_const_values = {0, 1, -1}
+    if data_driven_constants:
+        base_const_values |= data_driven_constants
+    # Sort for deterministic enumeration.
+    const_values_sorted = sorted(base_const_values, key=lambda x: (abs(x), x))
+
+    constants = [ExprNode(kind="const", value=v) for v in const_values_sorted]
 
     var_nodes = [ExprNode(kind="var", var_name=v) for v in variables]
 
     # Depth-0 candidates.
     candidates: list[ExprNode] = list(constants)
 
-    # Depth-1 candidates.
-    candidates.extend(var_nodes)
+    # Depth-1 candidates: target variable first (if specified).
+    if target_variable:
+        target_vars = [v for v in var_nodes if v.var_name == target_variable]
+        other_vars = [v for v in var_nodes if v.var_name != target_variable]
+    else:
+        target_vars = var_nodes
+        other_vars = []
+
+    candidates.extend(target_vars)
 
     if max_depth < 2:
+        candidates.extend(other_vars)
         return candidates
 
     # Depth-2 candidates: binary combinations.
     atoms = constants + var_nodes
+
+    # Separate self-referencing (uses target_variable) from cross-variable.
+    self_ref: list[ExprNode] = []
+    cross_ref: list[ExprNode] = []
+
     for lhs in atoms:
         for rhs in atoms:
             if lhs.kind == "const" and rhs.kind == "const":
                 continue  # const ⊕ const is just another const — skip.
-            candidates.append(ExprNode(kind="add", children=(lhs, rhs)))
-            candidates.append(ExprNode(kind="sub", children=(lhs, rhs)))
-            candidates.append(ExprNode(kind="mul", children=(lhs, rhs)))
+            for op in ("add", "sub", "mul"):
+                node = ExprNode(kind=op, children=(lhs, rhs))
+                if target_variable and _expr_references_var(node, target_variable):
+                    self_ref.append(node)
+                else:
+                    cross_ref.append(node)
+
+    # Enumeration order (self-referencing preference):
+    #   1. constants          (depth 0)
+    #   2. target variable    (depth 1, identity check)
+    #   3. self-ref depth-2   (e.g. y+1, y-1 — preferred)
+    #   4. other variables    (depth 1, cross-variable)
+    #   5. cross-ref depth-2  (e.g. x+1, x*2)
+    candidates.extend(self_ref)
+    candidates.extend(other_vars)
+    candidates.extend(cross_ref)
 
     return candidates
+
+
+def _expr_references_var(node: ExprNode, var_name: str) -> bool:
+    """Return True if *node* contains a reference to *var_name*."""
+    if node.kind == "var" and node.var_name == var_name:
+        return True
+    return any(_expr_references_var(c, var_name) for c in node.children)
+
+
+def _compute_data_driven_constants(
+    var: str,
+    pre_post_pairs: list[tuple[dict[str, Any], dict[str, Any]]],
+) -> set[int | float]:
+    """Compute candidate constants from observed pre/post deltas.
+
+    For each observation pair where both pre and post values for
+    *var* are numeric, compute  delta = post[var] - pre[var].
+    The set of unique non-trivial deltas (excluding 0, 1, −1 which
+    are already in the base pool) is returned.
+
+    To avoid blowing up the search space, at most 10 unique delta
+    values are kept (the most frequently occurring ones).
+    """
+    from collections import Counter
+    delta_counts: Counter[int | float] = Counter()
+
+    for pre, post in pre_post_pairs:
+        pre_val = pre.get(var)
+        post_val = post.get(var)
+        if isinstance(pre_val, (int, float)) and isinstance(post_val, (int, float)):
+            delta = post_val - pre_val
+            if delta not in (0, 1, -1):
+                # Keep as int if possible.
+                if isinstance(delta, float) and delta == int(delta):
+                    delta = int(delta)
+                delta_counts[delta] += 1
+
+    # Return the top-10 most frequent deltas.
+    return {d for d, _ in delta_counts.most_common(10)}
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -299,7 +401,18 @@ def _get_abduct_ucl(
     # De-duplicate observations to speed up solver calls.
     unique_pairs = _deduplicate_pairs(var, pre_post_pairs, variables)
 
-    candidates = _enumerate_candidates(variables, max_depth=2)
+    # ── Data-driven constant inference ───────────────────────────────
+    # Compute pre/post deltas for the target variable and add them
+    # to the expression grammar so that updates like  var + 100  or
+    # var - 50  become reachable.
+    data_constants = _compute_data_driven_constants(var, unique_pairs)
+
+    candidates = _enumerate_candidates(
+        variables,
+        max_depth=2,
+        data_driven_constants=data_constants,
+        target_variable=var,
+    )
 
     # ── Symbolic pruning (optional) ──────────────────────────────────
     # When enabled and a non-trivial guard is available, collapse
@@ -324,17 +437,42 @@ def _get_abduct_ucl(
         return None
 
     # ── Context-reuse loop ───────────────────────────────────────────
-    # Create ONE solver context and reset() between candidates
-    # instead of allocating / freeing a fresh context for each of
-    # the ~2 700 candidates.  This reduces native handle churn from
-    # O(|candidates| × |transitions|) to O(|transitions|).
+    # Try each candidate in size-increasing order.  First attempt a
+    # pure-Python evaluation (O(n) per candidate, no SMT).  Only
+    # fall back to SMT if a variable is missing from a sample.
     smt_vars = {v: smt.Real(v) for v in variables}
 
-    with smt.create_context(timeout_ms=3000) as ctx:
-        for candidate in candidates:
-            try:
-                ctx.reset()
+    for candidate in candidates:
+        # ── Fast path: pure-Python evaluation ────────────────────
+        fast_ok = True
+        fast_has_constraint = False
+        use_smt_fallback = False
 
+        for pre, post in unique_pairs:
+            if var not in post:
+                continue
+            if not isinstance(post[var], (int, float)):
+                fast_ok = False
+                break
+
+            fast_has_constraint = True
+            result = candidate.evaluate(pre)
+            if result is None:
+                # Variable missing → need SMT fallback for this candidate.
+                use_smt_fallback = True
+                break
+            if abs(result - float(post[var])) > 1e-9:
+                fast_ok = False
+                break
+
+        if not use_smt_fallback:
+            if fast_ok and fast_has_constraint:
+                return candidate
+            continue  # Fast rejection — skip to next candidate.
+
+        # ── SMT fallback (only when evaluate() returned None) ────
+        try:
+            with smt.create_context(timeout_ms=3000) as ctx:
                 valid = True
                 has_constraints = False
 
@@ -347,7 +485,6 @@ def _get_abduct_ucl(
 
                     has_constraints = True
 
-                    # Substitute pre-state values into candidate expression.
                     expr = candidate.to_smt(smt_vars, smt)
                     substitutions = [
                         (smt_vars[v], smt.RealVal(pre[v]))
@@ -363,13 +500,10 @@ def _get_abduct_ucl(
                 if not valid or not has_constraints:
                     continue
 
-                # Check satisfiability.
                 if ctx.check() == SatResult.SAT:
                     return candidate
-            except Exception:
-                # Candidate produced a formula the solver cannot handle
-                # (e.g. non-linear arithmetic under QF_LRA).  Skip it.
-                continue
+        except Exception:
+            continue
 
     return None
 

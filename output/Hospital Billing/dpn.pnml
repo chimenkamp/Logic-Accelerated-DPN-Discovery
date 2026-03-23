@@ -1,0 +1,818 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pnml>
+  <net id="dpn_net" type="http://www.pnml.org/version-2009/grammar/pnml">
+    <page id="page0">
+      <place id="p_r0_q0">
+        <name>
+          <text>p_r0_q0</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="p_r10_q107">
+        <name>
+          <text>p_r10_q107</text>
+        </name>
+      </place>
+      <place id="p_r17_q115_q12">
+        <name>
+          <text>p_r17_q115_q12</text>
+        </name>
+      </place>
+      <place id="p_r18_q116">
+        <name>
+          <text>p_r18_q116</text>
+        </name>
+      </place>
+      <place id="p_r19_q117">
+        <name>
+          <text>p_r19_q117</text>
+        </name>
+      </place>
+      <place id="p_r1_q1_q10_q100_+85">
+        <name>
+          <text>p_r1_q1_q10_q100_+85</text>
+        </name>
+      </place>
+      <place id="p_r2_q1_q175_q7">
+        <name>
+          <text>p_r2_q1_q175_q7</text>
+        </name>
+      </place>
+      <place id="p_r3_q10_q118_q18_+7">
+        <name>
+          <text>p_r3_q10_q118_q18_+7</text>
+        </name>
+      </place>
+      <transition id="t_BILLED_1">
+        <name>
+          <text>BILLED</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_BILLED_1" source="p_r1_q1_q10_q100_+85" target="t_BILLED_1" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_BILLED_1" source="p_r3_q10_q118_q18_+7" target="t_BILLED_1" />
+      <arc id="arc_t_BILLED_1_to_p_r1_q1_q10_q100_+85" source="t_BILLED_1" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_BILLED_2">
+        <name>
+          <text>BILLED</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_BILLED_2" source="p_r1_q1_q10_q100_+85" target="t_BILLED_2" />
+      <arc id="arc_p_r10_q107_to_t_BILLED_2" source="p_r10_q107" target="t_BILLED_2" />
+      <arc id="arc_t_BILLED_2_to_p_r1_q1_q10_q100_+85" source="t_BILLED_2" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_BILLED_2_to_p_r10_q107" source="t_BILLED_2" target="p_r10_q107" />
+      <transition id="t_BILLED_8">
+        <name>
+          <text>BILLED</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_BILLED_8" source="p_r1_q1_q10_q100_+85" target="t_BILLED_8" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_BILLED_8" source="p_r3_q10_q118_q18_+7" target="t_BILLED_8" />
+      <arc id="arc_t_BILLED_8_to_p_r1_q1_q10_q100_+85" source="t_BILLED_8" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_BILLED_8_to_p_r10_q107" source="t_BILLED_8" target="p_r10_q107" />
+      <transition id="t_BILLED_9">
+        <name>
+          <text>BILLED</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_BILLED_9" source="p_r1_q1_q10_q100_+85" target="t_BILLED_9" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_BILLED_9" source="p_r3_q10_q118_q18_+7" target="t_BILLED_9" />
+      <arc id="arc_t_BILLED_9_to_p_r1_q1_q10_q100_+85" source="t_BILLED_9" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_BILLED_9_to_p_r3_q10_q118_q18_+7" source="t_BILLED_9" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_BILLED_12">
+        <name>
+          <text>BILLED</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_BILLED_12" source="p_r1_q1_q10_q100_+85" target="t_BILLED_12" />
+      <arc id="arc_p_r10_q107_to_t_BILLED_12" source="p_r10_q107" target="t_BILLED_12" />
+      <arc id="arc_t_BILLED_12_to_p_r1_q1_q10_q100_+85" source="t_BILLED_12" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_BILLED_12_to_p_r3_q10_q118_q18_+7" source="t_BILLED_12" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_CHANGE DIAGN_13">
+        <name>
+          <text>CHANGE DIAGN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CHANGE DIAGN_13" source="p_r1_q1_q10_q100_+85" target="t_CHANGE DIAGN_13" />
+      <arc id="arc_p_r10_q107_to_t_CHANGE DIAGN_13" source="p_r10_q107" target="t_CHANGE DIAGN_13" />
+      <arc id="arc_t_CHANGE DIAGN_13_to_p_r1_q1_q10_q100_+85" source="t_CHANGE DIAGN_13" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CHANGE DIAGN_13_to_p_r10_q107" source="t_CHANGE DIAGN_13" target="p_r10_q107" />
+      <transition id="t_CHANGE DIAGN_14">
+        <name>
+          <text>CHANGE DIAGN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r2_q1_q175_q7_to_t_CHANGE DIAGN_14" source="p_r2_q1_q175_q7" target="t_CHANGE DIAGN_14" />
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CHANGE DIAGN_14" source="p_r1_q1_q10_q100_+85" target="t_CHANGE DIAGN_14" />
+      <arc id="arc_t_CHANGE DIAGN_14_to_p_r17_q115_q12" source="t_CHANGE DIAGN_14" target="p_r17_q115_q12" />
+      <arc id="arc_t_CHANGE DIAGN_14_to_p_r1_q1_q10_q100_+85" source="t_CHANGE DIAGN_14" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_CHANGE DIAGN_15">
+        <name>
+          <text>CHANGE DIAGN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CHANGE DIAGN_15" source="p_r1_q1_q10_q100_+85" target="t_CHANGE DIAGN_15" />
+      <arc id="arc_p_r10_q107_to_t_CHANGE DIAGN_15" source="p_r10_q107" target="t_CHANGE DIAGN_15" />
+      <arc id="arc_t_CHANGE DIAGN_15_to_p_r17_q115_q12" source="t_CHANGE DIAGN_15" target="p_r17_q115_q12" />
+      <arc id="arc_t_CHANGE DIAGN_15_to_p_r1_q1_q10_q100_+85" source="t_CHANGE DIAGN_15" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_CHANGE DIAGN_18">
+        <name>
+          <text>CHANGE DIAGN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CHANGE DIAGN_18" source="p_r1_q1_q10_q100_+85" target="t_CHANGE DIAGN_18" />
+      <arc id="arc_p_r10_q107_to_t_CHANGE DIAGN_18" source="p_r10_q107" target="t_CHANGE DIAGN_18" />
+      <arc id="arc_t_CHANGE DIAGN_18_to_p_r2_q1_q175_q7" source="t_CHANGE DIAGN_18" target="p_r2_q1_q175_q7" />
+      <arc id="arc_t_CHANGE DIAGN_18_to_p_r1_q1_q10_q100_+85" source="t_CHANGE DIAGN_18" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_CODE ERROR_21">
+        <name>
+          <text>CODE ERROR</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="actRed">0</update>
+          <update variable="flagC">0</update>
+          <update variable="msgCount">1</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE ERROR_21" source="p_r1_q1_q10_q100_+85" target="t_CODE ERROR_21" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_CODE ERROR_21" source="p_r3_q10_q118_q18_+7" target="t_CODE ERROR_21" />
+      <arc id="arc_t_CODE ERROR_21_to_p_r1_q1_q10_q100_+85" source="t_CODE ERROR_21" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE ERROR_21_to_p_r10_q107" source="t_CODE ERROR_21" target="p_r10_q107" />
+      <transition id="t_CODE NOK_22">
+        <name>
+          <text>CODE NOK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="actRed">0</update>
+          <update variable="flagC">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE NOK_22" source="p_r1_q1_q10_q100_+85" target="t_CODE NOK_22" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_CODE NOK_22" source="p_r3_q10_q118_q18_+7" target="t_CODE NOK_22" />
+      <arc id="arc_t_CODE NOK_22_to_p_r1_q1_q10_q100_+85" source="t_CODE NOK_22" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE NOK_22_to_p_r10_q107" source="t_CODE NOK_22" target="p_r10_q107" />
+      <transition id="t_CODE NOK_23">
+        <name>
+          <text>CODE NOK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="actRed">0</update>
+          <update variable="flagC">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE NOK_23" source="p_r1_q1_q10_q100_+85" target="t_CODE NOK_23" />
+      <arc id="arc_p_r10_q107_to_t_CODE NOK_23" source="p_r10_q107" target="t_CODE NOK_23" />
+      <arc id="arc_t_CODE NOK_23_to_p_r19_q117" source="t_CODE NOK_23" target="p_r19_q117" />
+      <arc id="arc_t_CODE NOK_23_to_p_r1_q1_q10_q100_+85" source="t_CODE NOK_23" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_CODE NOK_24">
+        <name>
+          <text>CODE NOK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="actRed">0</update>
+          <update variable="flagC">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE NOK_24" source="p_r1_q1_q10_q100_+85" target="t_CODE NOK_24" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_CODE NOK_24" source="p_r3_q10_q118_q18_+7" target="t_CODE NOK_24" />
+      <arc id="arc_t_CODE NOK_24_to_p_r19_q117" source="t_CODE NOK_24" target="p_r19_q117" />
+      <arc id="arc_t_CODE NOK_24_to_p_r1_q1_q10_q100_+85" source="t_CODE NOK_24" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_CODE NOK_25">
+        <name>
+          <text>CODE NOK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="actRed">0</update>
+          <update variable="flagC">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE NOK_25" source="p_r1_q1_q10_q100_+85" target="t_CODE NOK_25" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_CODE NOK_25" source="p_r3_q10_q118_q18_+7" target="t_CODE NOK_25" />
+      <arc id="arc_t_CODE NOK_25_to_p_r1_q1_q10_q100_+85" source="t_CODE NOK_25" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE NOK_25_to_p_r3_q10_q118_q18_+7" source="t_CODE NOK_25" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_CODE NOK_27">
+        <name>
+          <text>CODE NOK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="actRed">0</update>
+          <update variable="flagC">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE NOK_27" source="p_r1_q1_q10_q100_+85" target="t_CODE NOK_27" />
+      <arc id="arc_p_r10_q107_to_t_CODE NOK_27" source="p_r10_q107" target="t_CODE NOK_27" />
+      <arc id="arc_t_CODE NOK_27_to_p_r1_q1_q10_q100_+85" source="t_CODE NOK_27" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE NOK_27_to_p_r10_q107" source="t_CODE NOK_27" target="p_r10_q107" />
+      <transition id="t_CODE NOK_32">
+        <name>
+          <text>CODE NOK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="actRed">0</update>
+          <update variable="flagC">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE NOK_32" source="p_r1_q1_q10_q100_+85" target="t_CODE NOK_32" />
+      <arc id="arc_p_r10_q107_to_t_CODE NOK_32" source="p_r10_q107" target="t_CODE NOK_32" />
+      <arc id="arc_t_CODE NOK_32_to_p_r1_q1_q10_q100_+85" source="t_CODE NOK_32" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE NOK_32_to_p_r3_q10_q118_q18_+7" source="t_CODE NOK_32" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_CODE OK_34">
+        <name>
+          <text>CODE OK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE OK_34" source="p_r1_q1_q10_q100_+85" target="t_CODE OK_34" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_CODE OK_34" source="p_r3_q10_q118_q18_+7" target="t_CODE OK_34" />
+      <arc id="arc_t_CODE OK_34_to_p_r1_q1_q10_q100_+85" source="t_CODE OK_34" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE OK_34_to_p_r3_q10_q118_q18_+7" source="t_CODE OK_34" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_CODE OK_35">
+        <name>
+          <text>CODE OK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE OK_35" source="p_r1_q1_q10_q100_+85" target="t_CODE OK_35" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_CODE OK_35" source="p_r3_q10_q118_q18_+7" target="t_CODE OK_35" />
+      <arc id="arc_t_CODE OK_35_to_p_r1_q1_q10_q100_+85" source="t_CODE OK_35" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_CODE OK_36">
+        <name>
+          <text>CODE OK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE OK_36" source="p_r1_q1_q10_q100_+85" target="t_CODE OK_36" />
+      <arc id="arc_p_r10_q107_to_t_CODE OK_36" source="p_r10_q107" target="t_CODE OK_36" />
+      <arc id="arc_t_CODE OK_36_to_p_r1_q1_q10_q100_+85" source="t_CODE OK_36" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE OK_36_to_p_r10_q107" source="t_CODE OK_36" target="p_r10_q107" />
+      <transition id="t_CODE OK_38">
+        <name>
+          <text>CODE OK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r19_q117_to_t_CODE OK_38" source="p_r19_q117" target="t_CODE OK_38" />
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE OK_38" source="p_r1_q1_q10_q100_+85" target="t_CODE OK_38" />
+      <arc id="arc_t_CODE OK_38_to_p_r1_q1_q10_q100_+85" source="t_CODE OK_38" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE OK_38_to_p_r3_q10_q118_q18_+7" source="t_CODE OK_38" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_CODE OK_40">
+        <name>
+          <text>CODE OK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE OK_40" source="p_r1_q1_q10_q100_+85" target="t_CODE OK_40" />
+      <arc id="arc_p_r10_q107_to_t_CODE OK_40" source="p_r10_q107" target="t_CODE OK_40" />
+      <arc id="arc_t_CODE OK_40_to_p_r1_q1_q10_q100_+85" source="t_CODE OK_40" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE OK_40_to_p_r3_q10_q118_q18_+7" source="t_CODE OK_40" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_CODE OK_41">
+        <name>
+          <text>CODE OK</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="actOrange">0</update>
+          <update variable="msgCount">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_CODE OK_41" source="p_r1_q1_q10_q100_+85" target="t_CODE OK_41" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_CODE OK_41" source="p_r3_q10_q118_q18_+7" target="t_CODE OK_41" />
+      <arc id="arc_t_CODE OK_41_to_p_r1_q1_q10_q100_+85" source="t_CODE OK_41" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_CODE OK_41_to_p_r10_q107" source="t_CODE OK_41" target="p_r10_q107" />
+      <transition id="t_DELETE_47">
+        <name>
+          <text>DELETE</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="isCancelled">1</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r17_q115_q12_to_t_DELETE_47" source="p_r17_q115_q12" target="t_DELETE_47" />
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_DELETE_47" source="p_r1_q1_q10_q100_+85" target="t_DELETE_47" />
+      <arc id="arc_t_DELETE_47_to_p_r1_q1_q10_q100_+85" source="t_DELETE_47" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_DELETE_48">
+        <name>
+          <text>DELETE</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="isCancelled">1</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_DELETE_48" source="p_r1_q1_q10_q100_+85" target="t_DELETE_48" />
+      <arc id="arc_p_r10_q107_to_t_DELETE_48" source="p_r10_q107" target="t_DELETE_48" />
+      <arc id="arc_t_DELETE_48_to_p_r1_q1_q10_q100_+85" source="t_DELETE_48" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_DELETE_49">
+        <name>
+          <text>DELETE</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="isCancelled">1</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_DELETE_49" source="p_r1_q1_q10_q100_+85" target="t_DELETE_49" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_DELETE_49" source="p_r3_q10_q118_q18_+7" target="t_DELETE_49" />
+      <arc id="arc_t_DELETE_49_to_p_r1_q1_q10_q100_+85" source="t_DELETE_49" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_DELETE_52">
+        <name>
+          <text>DELETE</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="isCancelled">1</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r2_q1_q175_q7_to_t_DELETE_52" source="p_r2_q1_q175_q7" target="t_DELETE_52" />
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_DELETE_52" source="p_r1_q1_q10_q100_+85" target="t_DELETE_52" />
+      <arc id="arc_t_DELETE_52_to_p_r1_q1_q10_q100_+85" source="t_DELETE_52" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_EMPTY_53">
+        <name>
+          <text>EMPTY</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_EMPTY_53" source="p_r1_q1_q10_q100_+85" target="t_EMPTY_53" />
+      <arc id="arc_p_r10_q107_to_t_EMPTY_53" source="p_r10_q107" target="t_EMPTY_53" />
+      <arc id="arc_t_EMPTY_53_to_p_r1_q1_q10_q100_+85" source="t_EMPTY_53" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_FIN_54">
+        <name>
+          <text>FIN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r2_q1_q175_q7_to_t_FIN_54" source="p_r2_q1_q175_q7" target="t_FIN_54" />
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_FIN_54" source="p_r1_q1_q10_q100_+85" target="t_FIN_54" />
+      <arc id="arc_t_FIN_54_to_p_r1_q1_q10_q100_+85" source="t_FIN_54" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_FIN_55">
+        <name>
+          <text>FIN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_FIN_55" source="p_r1_q1_q10_q100_+85" target="t_FIN_55" />
+      <arc id="arc_p_r10_q107_to_t_FIN_55" source="p_r10_q107" target="t_FIN_55" />
+      <arc id="arc_t_FIN_55_to_p_r1_q1_q10_q100_+85" source="t_FIN_55" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_FIN_55_to_p_r10_q107" source="t_FIN_55" target="p_r10_q107" />
+      <transition id="t_FIN_57">
+        <name>
+          <text>FIN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r17_q115_q12_to_t_FIN_57" source="p_r17_q115_q12" target="t_FIN_57" />
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_FIN_57" source="p_r1_q1_q10_q100_+85" target="t_FIN_57" />
+      <arc id="arc_t_FIN_57_to_p_r18_q116" source="t_FIN_57" target="p_r18_q116" />
+      <arc id="arc_t_FIN_57_to_p_r1_q1_q10_q100_+85" source="t_FIN_57" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_FIN_59">
+        <name>
+          <text>FIN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_FIN_59" source="p_r1_q1_q10_q100_+85" target="t_FIN_59" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_FIN_59" source="p_r3_q10_q118_q18_+7" target="t_FIN_59" />
+      <arc id="arc_t_FIN_59_to_p_r1_q1_q10_q100_+85" source="t_FIN_59" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_FIN_59_to_p_r10_q107" source="t_FIN_59" target="p_r10_q107" />
+      <transition id="t_FIN_64">
+        <name>
+          <text>FIN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r2_q1_q175_q7_to_t_FIN_64" source="p_r2_q1_q175_q7" target="t_FIN_64" />
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_FIN_64" source="p_r1_q1_q10_q100_+85" target="t_FIN_64" />
+      <arc id="arc_t_FIN_64_to_p_r1_q1_q10_q100_+85" source="t_FIN_64" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_FIN_64_to_p_r10_q107" source="t_FIN_64" target="p_r10_q107" />
+      <transition id="t_JOIN-PAT_71">
+        <name>
+          <text>JOIN-PAT</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_JOIN-PAT_71" source="p_r1_q1_q10_q100_+85" target="t_JOIN-PAT_71" />
+      <arc id="arc_p_r10_q107_to_t_JOIN-PAT_71" source="p_r10_q107" target="t_JOIN-PAT_71" />
+      <arc id="arc_t_JOIN-PAT_71_to_p_r1_q1_q10_q100_+85" source="t_JOIN-PAT_71" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_JOIN-PAT_72">
+        <name>
+          <text>JOIN-PAT</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_JOIN-PAT_72" source="p_r1_q1_q10_q100_+85" target="t_JOIN-PAT_72" />
+      <arc id="arc_p_r10_q107_to_t_JOIN-PAT_72" source="p_r10_q107" target="t_JOIN-PAT_72" />
+      <arc id="arc_t_JOIN-PAT_72_to_p_r1_q1_q10_q100_+85" source="t_JOIN-PAT_72" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_JOIN-PAT_72_to_p_r10_q107" source="t_JOIN-PAT_72" target="p_r10_q107" />
+      <transition id="t_MANUAL_75">
+        <name>
+          <text>MANUAL</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_MANUAL_75" source="p_r1_q1_q10_q100_+85" target="t_MANUAL_75" />
+      <arc id="arc_p_r10_q107_to_t_MANUAL_75" source="p_r10_q107" target="t_MANUAL_75" />
+      <arc id="arc_t_MANUAL_75_to_p_r18_q116" source="t_MANUAL_75" target="p_r18_q116" />
+      <arc id="arc_t_MANUAL_75_to_p_r1_q1_q10_q100_+85" source="t_MANUAL_75" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_NEW_76">
+        <name>
+          <text>NEW</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="blocked">0</update>
+          <update variable="flagA">0</update>
+          <update variable="flagB">0</update>
+          <update variable="isCancelled">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r0_q0_to_t_NEW_76" source="p_r0_q0" target="t_NEW_76" />
+      <arc id="arc_t_NEW_76_to_p_r2_q1_q175_q7" source="t_NEW_76" target="p_r2_q1_q175_q7" />
+      <arc id="arc_t_NEW_76_to_p_r1_q1_q10_q100_+85" source="t_NEW_76" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_NEW_77">
+        <name>
+          <text>NEW</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="blocked">0</update>
+          <update variable="flagA">0</update>
+          <update variable="flagB">0</update>
+          <update variable="isCancelled">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r0_q0_to_t_NEW_77" source="p_r0_q0" target="t_NEW_77" />
+      <arc id="arc_t_NEW_77_to_p_r1_q1_q10_q100_+85" source="t_NEW_77" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_NEW_78">
+        <name>
+          <text>NEW</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="blocked">0</update>
+          <update variable="flagA">0</update>
+          <update variable="flagB">0</update>
+          <update variable="isCancelled">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_NEW_78" source="p_r1_q1_q10_q100_+85" target="t_NEW_78" />
+      <arc id="arc_p_r10_q107_to_t_NEW_78" source="p_r10_q107" target="t_NEW_78" />
+      <arc id="arc_t_NEW_78_to_p_r1_q1_q10_q100_+85" source="t_NEW_78" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_NEW_78_to_p_r10_q107" source="t_NEW_78" target="p_r10_q107" />
+      <transition id="t_NEW_79">
+        <name>
+          <text>NEW</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <update variable="blocked">0</update>
+          <update variable="flagA">0</update>
+          <update variable="flagB">0</update>
+          <update variable="isCancelled">0</update>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r0_q0_to_t_NEW_79" source="p_r0_q0" target="t_NEW_79" />
+      <arc id="arc_t_NEW_79_to_p_r1_q1_q10_q100_+85" source="t_NEW_79" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_NEW_79_to_p_r10_q107" source="t_NEW_79" target="p_r10_q107" />
+      <transition id="t_REJECT_81">
+        <name>
+          <text>REJECT</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_REJECT_81" source="p_r1_q1_q10_q100_+85" target="t_REJECT_81" />
+      <arc id="arc_p_r10_q107_to_t_REJECT_81" source="p_r10_q107" target="t_REJECT_81" />
+      <arc id="arc_t_REJECT_81_to_p_r1_q1_q10_q100_+85" source="t_REJECT_81" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_REJECT_81_to_p_r3_q10_q118_q18_+7" source="t_REJECT_81" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_REJECT_82">
+        <name>
+          <text>REJECT</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_REJECT_82" source="p_r1_q1_q10_q100_+85" target="t_REJECT_82" />
+      <arc id="arc_p_r10_q107_to_t_REJECT_82" source="p_r10_q107" target="t_REJECT_82" />
+      <arc id="arc_t_REJECT_82_to_p_r1_q1_q10_q100_+85" source="t_REJECT_82" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_REJECT_82_to_p_r10_q107" source="t_REJECT_82" target="p_r10_q107" />
+      <transition id="t_RELEASE_88">
+        <name>
+          <text>RELEASE</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_RELEASE_88" source="p_r1_q1_q10_q100_+85" target="t_RELEASE_88" />
+      <arc id="arc_p_r10_q107_to_t_RELEASE_88" source="p_r10_q107" target="t_RELEASE_88" />
+      <arc id="arc_t_RELEASE_88_to_p_r1_q1_q10_q100_+85" source="t_RELEASE_88" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_RELEASE_88_to_p_r10_q107" source="t_RELEASE_88" target="p_r10_q107" />
+      <transition id="t_RELEASE_90">
+        <name>
+          <text>RELEASE</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r18_q116_to_t_RELEASE_90" source="p_r18_q116" target="t_RELEASE_90" />
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_RELEASE_90" source="p_r1_q1_q10_q100_+85" target="t_RELEASE_90" />
+      <arc id="arc_t_RELEASE_90_to_p_r19_q117" source="t_RELEASE_90" target="p_r19_q117" />
+      <arc id="arc_t_RELEASE_90_to_p_r1_q1_q10_q100_+85" source="t_RELEASE_90" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_RELEASE_91">
+        <name>
+          <text>RELEASE</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_RELEASE_91" source="p_r1_q1_q10_q100_+85" target="t_RELEASE_91" />
+      <arc id="arc_p_r10_q107_to_t_RELEASE_91" source="p_r10_q107" target="t_RELEASE_91" />
+      <arc id="arc_t_RELEASE_91_to_p_r19_q117" source="t_RELEASE_91" target="p_r19_q117" />
+      <arc id="arc_t_RELEASE_91_to_p_r1_q1_q10_q100_+85" source="t_RELEASE_91" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_RELEASE_98">
+        <name>
+          <text>RELEASE</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_RELEASE_98" source="p_r1_q1_q10_q100_+85" target="t_RELEASE_98" />
+      <arc id="arc_p_r10_q107_to_t_RELEASE_98" source="p_r10_q107" target="t_RELEASE_98" />
+      <arc id="arc_t_RELEASE_98_to_p_r1_q1_q10_q100_+85" source="t_RELEASE_98" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_RELEASE_98_to_p_r3_q10_q118_q18_+7" source="t_RELEASE_98" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_REOPEN_103">
+        <name>
+          <text>REOPEN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_REOPEN_103" source="p_r1_q1_q10_q100_+85" target="t_REOPEN_103" />
+      <arc id="arc_p_r10_q107_to_t_REOPEN_103" source="p_r10_q107" target="t_REOPEN_103" />
+      <arc id="arc_t_REOPEN_103_to_p_r17_q115_q12" source="t_REOPEN_103" target="p_r17_q115_q12" />
+      <arc id="arc_t_REOPEN_103_to_p_r1_q1_q10_q100_+85" source="t_REOPEN_103" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_REOPEN_104">
+        <name>
+          <text>REOPEN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_REOPEN_104" source="p_r1_q1_q10_q100_+85" target="t_REOPEN_104" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_REOPEN_104" source="p_r3_q10_q118_q18_+7" target="t_REOPEN_104" />
+      <arc id="arc_t_REOPEN_104_to_p_r17_q115_q12" source="t_REOPEN_104" target="p_r17_q115_q12" />
+      <arc id="arc_t_REOPEN_104_to_p_r1_q1_q10_q100_+85" source="t_REOPEN_104" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_REOPEN_105">
+        <name>
+          <text>REOPEN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_REOPEN_105" source="p_r1_q1_q10_q100_+85" target="t_REOPEN_105" />
+      <arc id="arc_p_r10_q107_to_t_REOPEN_105" source="p_r10_q107" target="t_REOPEN_105" />
+      <arc id="arc_t_REOPEN_105_to_p_r1_q1_q10_q100_+85" source="t_REOPEN_105" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_REOPEN_105_to_p_r10_q107" source="t_REOPEN_105" target="p_r10_q107" />
+      <transition id="t_REOPEN_107">
+        <name>
+          <text>REOPEN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_REOPEN_107" source="p_r1_q1_q10_q100_+85" target="t_REOPEN_107" />
+      <arc id="arc_p_r10_q107_to_t_REOPEN_107" source="p_r10_q107" target="t_REOPEN_107" />
+      <arc id="arc_t_REOPEN_107_to_p_r2_q1_q175_q7" source="t_REOPEN_107" target="p_r2_q1_q175_q7" />
+      <arc id="arc_t_REOPEN_107_to_p_r1_q1_q10_q100_+85" source="t_REOPEN_107" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_REOPEN_111">
+        <name>
+          <text>REOPEN</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_REOPEN_111" source="p_r1_q1_q10_q100_+85" target="t_REOPEN_111" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_REOPEN_111" source="p_r3_q10_q118_q18_+7" target="t_REOPEN_111" />
+      <arc id="arc_t_REOPEN_111_to_p_r1_q1_q10_q100_+85" source="t_REOPEN_111" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_REOPEN_111_to_p_r10_q107" source="t_REOPEN_111" target="p_r10_q107" />
+      <transition id="t_SET STATUS_113">
+        <name>
+          <text>SET STATUS</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_SET STATUS_113" source="p_r1_q1_q10_q100_+85" target="t_SET STATUS_113" />
+      <arc id="arc_p_r10_q107_to_t_SET STATUS_113" source="p_r10_q107" target="t_SET STATUS_113" />
+      <arc id="arc_t_SET STATUS_113_to_p_r1_q1_q10_q100_+85" source="t_SET STATUS_113" target="p_r1_q1_q10_q100_+85" />
+      <transition id="t_STORNO_115">
+        <name>
+          <text>STORNO</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_STORNO_115" source="p_r1_q1_q10_q100_+85" target="t_STORNO_115" />
+      <arc id="arc_p_r10_q107_to_t_STORNO_115" source="p_r10_q107" target="t_STORNO_115" />
+      <arc id="arc_t_STORNO_115_to_p_r1_q1_q10_q100_+85" source="t_STORNO_115" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_STORNO_115_to_p_r3_q10_q118_q18_+7" source="t_STORNO_115" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_STORNO_116">
+        <name>
+          <text>STORNO</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_STORNO_116" source="p_r1_q1_q10_q100_+85" target="t_STORNO_116" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_STORNO_116" source="p_r3_q10_q118_q18_+7" target="t_STORNO_116" />
+      <arc id="arc_t_STORNO_116_to_p_r1_q1_q10_q100_+85" source="t_STORNO_116" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_STORNO_116_to_p_r3_q10_q118_q18_+7" source="t_STORNO_116" target="p_r3_q10_q118_q18_+7" />
+      <transition id="t_STORNO_118">
+        <name>
+          <text>STORNO</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_STORNO_118" source="p_r1_q1_q10_q100_+85" target="t_STORNO_118" />
+      <arc id="arc_p_r10_q107_to_t_STORNO_118" source="p_r10_q107" target="t_STORNO_118" />
+      <arc id="arc_t_STORNO_118_to_p_r1_q1_q10_q100_+85" source="t_STORNO_118" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_STORNO_118_to_p_r10_q107" source="t_STORNO_118" target="p_r10_q107" />
+      <transition id="t_STORNO_123">
+        <name>
+          <text>STORNO</text>
+        </name>
+        <toolspecific tool="dpn-discovery" version="1.0">
+          <guard>true</guard>
+        </toolspecific>
+      </transition>
+      <arc id="arc_p_r1_q1_q10_q100_+85_to_t_STORNO_123" source="p_r1_q1_q10_q100_+85" target="t_STORNO_123" />
+      <arc id="arc_p_r3_q10_q118_q18_+7_to_t_STORNO_123" source="p_r3_q10_q118_q18_+7" target="t_STORNO_123" />
+      <arc id="arc_t_STORNO_123_to_p_r1_q1_q10_q100_+85" source="t_STORNO_123" target="p_r1_q1_q10_q100_+85" />
+      <arc id="arc_t_STORNO_123_to_p_r10_q107" source="t_STORNO_123" target="p_r10_q107" />
+    </page>
+    <toolspecific tool="dpn-discovery" version="1.0">
+      <variable name="actOrange" />
+      <variable name="actRed" />
+      <variable name="blocked" />
+      <variable name="caseType" />
+      <variable name="closeCode" />
+      <variable name="diagnosis" />
+      <variable name="flagA" />
+      <variable name="flagB" />
+      <variable name="flagC" />
+      <variable name="flagD" />
+      <variable name="isCancelled" />
+      <variable name="isClosed" />
+      <variable name="msgCode" />
+      <variable name="msgCount" />
+      <variable name="msgType" />
+      <variable name="speciality" />
+      <variable name="state" />
+      <variable name="version" />
+    </toolspecific>
+  </net>
+</pnml>

@@ -12,7 +12,7 @@ from pathlib import Path
 
 from dpn_discovery.smt import get_solver
 
-from dpn_discovery.dpn_transform import dpn_to_pnml, efsm_to_dpn, verify_dpn
+from dpn_discovery.dpn_transform import dpn_to_pnml, efsm_to_dpn, efsm_to_dpn_structural, verify_dpn
 from dpn_discovery.guard_synthesis import synthesise_guards
 from dpn_discovery.models import EFSM, DataPetriNet, EventLog, Transition
 from dpn_discovery.pipeline import run_pipeline
@@ -161,22 +161,36 @@ class TestPostconditionSynthesis:
 
 
 class TestDPNTransform:
-    def test_places_match_states(self) -> None:
+    def test_region_based_places(self) -> None:
+        """Region-based synthesis (Cortadella et al. §4) produces
+        places from regions — typically ≤ number of EFSM states."""
         log = load_event_log(LOAN_LOG)
         pta = build_pta(log)
         merged = run_state_merging(pta)
         guarded = synthesise_guards(merged)
         full = synthesise_postconditions(guarded)
         dpn = efsm_to_dpn(full)
+        assert len(dpn.places) > 0
+        assert len(dpn.transitions) > 0
+
+    def test_structural_places_match_states(self) -> None:
+        """Legacy structural mapping: one place per EFSM state."""
+        log = load_event_log(LOAN_LOG)
+        pta = build_pta(log)
+        merged = run_state_merging(pta)
+        guarded = synthesise_guards(merged)
+        full = synthesise_postconditions(guarded)
+        dpn = efsm_to_dpn_structural(full)
         assert len(dpn.places) == len(full.states)
 
-    def test_transitions_match(self) -> None:
+    def test_structural_transitions_match(self) -> None:
+        """Legacy structural mapping: one DPN transition per EFSM edge."""
         log = load_event_log(LOAN_LOG)
         pta = build_pta(log)
         merged = run_state_merging(pta)
         guarded = synthesise_guards(merged)
         full = synthesise_postconditions(guarded)
-        dpn = efsm_to_dpn(full)
+        dpn = efsm_to_dpn_structural(full)
         assert len(dpn.transitions) == len(full.transitions)
 
     def test_initial_marking(self) -> None:
@@ -186,6 +200,16 @@ class TestDPNTransform:
         guarded = synthesise_guards(merged)
         full = synthesise_postconditions(guarded)
         dpn = efsm_to_dpn(full)
+        # Region-based: at least one place must be initially marked.
+        assert len(dpn.initial_marking) > 0
+
+    def test_structural_initial_marking(self) -> None:
+        log = load_event_log(LOAN_LOG)
+        pta = build_pta(log)
+        merged = run_state_merging(pta)
+        guarded = synthesise_guards(merged)
+        full = synthesise_postconditions(guarded)
+        dpn = efsm_to_dpn_structural(full)
         assert "p_q0" in dpn.initial_marking
 
     def test_pnml_serialisation(self) -> None:

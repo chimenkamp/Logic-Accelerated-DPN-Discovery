@@ -18,10 +18,6 @@ When MINT is selected it runs directly on the PTA — it is a
 **self-contained** merging algorithm that replaces Blue-Fringe,
 not a post-processing step on top of it.
 
-After merging, a **structural deduplication** pass merges any
-remaining states whose outgoing transition signatures are
-identical, ensuring the resulting DPN has no redundant places.
-
 Both strategies maintain the red/blue colouring scheme.  At each
 iteration, *all* (red, blue) candidate pairs are scored; the pair
 with the **highest EDSM score** (≥ *k*) is selected.  If no pair
@@ -34,13 +30,19 @@ Key design decisions aligned with the paper
     merges between accepting and non-accepting states would
     prevent leaf-to-intermediate merges, leaving the model
     unnecessarily large.
-  • EDSM scoring (``_compute_edsm_score``) only counts
-    classifier-equivalent transitions in MINT mode (Algorithm 3,
-    lines 26–33).
+  • EDSM scoring (``_compute_edsm_score``) is **classifier-
+    aware** in MINT mode — a shared-label pair only contributes
+    to the score if the transitions are classifier-equivalent
+    (Algorithm 3, lines 26–33, **existential** check: at least
+    one shared classifier prediction between the two groups).
+  • Leaf-state bonus: two accepting states with no outgoing
+    transitions score +1 so they are preferred merge partners
+    (prevents proliferation of distinct final states).
   • Recursive non-determinism resolution inside merge
     (Algorithm 3, lines 19–24).
   • Post-merge ``_is_consistent`` validation (MINT only,
-    Algorithm 3, line 7).
+    Algorithm 3, line 7) — **binary**: any inconsistency
+    rejects the merge.
   • ``Failed`` set to skip rejected merge pairs.
 
 Reference
@@ -122,21 +124,16 @@ def run_state_merging(
         efsm = _run_merge_loop(
             pta.deep_copy(), MergeStrategy.MINT, classifiers, variables, k,
         )
-    else:
-        # Blue-Fringe only (Algorithms 1 & 2).
+    elif strategy is MergeStrategy.BLUE_FRINGE:
+        logger.warning(
+            "  Blue-Fringe merging is available but MINT is recommended. "
+            "Blue-Fringe does not use classifiers and may under-merge."
+        )
         efsm = _run_merge_loop(
             pta.deep_copy(), strategy, None, None, k,
         )
-
-    # Final pass — merge structurally equivalent states so that
-    # the resulting DPN has no duplicate places for the same
-    # activity pattern.
-    before = len(efsm.states)
-    efsm = _deduplicate_states(efsm)
-    if len(efsm.states) < before:
-        logger.info(
-            "  Dedup: %d → %d states", before, len(efsm.states),
-        )
+    else:
+        raise ValueError(f"Unknown merge strategy: {strategy}")
 
     return efsm
 
@@ -180,10 +177,6 @@ def _run_merge_loop(
     merges_done = 0
     iterations = 0
 
-    # Cache the inconsistency count so we only recompute after a
-    # successful merge (not after every failed attempt).
-    cached_incon: int | None = None
-
     while blue:
         iterations += 1
         if iterations % 50 == 0:
@@ -210,6 +203,8 @@ def _run_merge_loop(
 
             score = _compute_edsm_score(
                 efsm, target, candidate,
+                classifiers=classifiers,
+                variables=variables,
             )
             if score > best_score:
                 best_score = score
@@ -221,13 +216,6 @@ def _run_merge_loop(
             backup = efsm.deep_copy()
             backup_vars = dict(vars_map)
 
-            # For MINT: use cached pre-merge inconsistency count.
-            if strategy is MergeStrategy.MINT and cached_incon is None:
-                cached_incon = _count_inconsistencies(
-                    efsm, classifiers, variables, vars_map,  # type: ignore[arg-type]
-                )
-            pre_incon = cached_incon if strategy is MergeStrategy.MINT else 0
-
             efsm, vars_map = _merge_states(
                 efsm, best_target, candidate, vars_map,
                 classifiers=classifiers,
@@ -236,28 +224,22 @@ def _run_merge_loop(
             )
 
             # MINT post-merge consistency check (Algorithm 3, line 7).
-            # A merge is rejected only if it INCREASES the number of
-            # classifier mismatches.  The PTA itself may already
-            # contain mismatches (classifiers are imperfect), so
-            # demanding zero mismatches would block all merges.
+            # Per the paper, consistent(S,T) is a **binary** predicate:
+            # the merged model must have zero classifier mismatches.
             if strategy is MergeStrategy.MINT:
-                post_incon = _count_inconsistencies(
+                if not _is_consistent(
                     efsm, classifiers, variables, vars_map,  # type: ignore[arg-type]
-                )
-                if post_incon > pre_incon:
+                ):
                     logger.debug(
                         "Merge %s \u2190 %s (score=%d) REJECTED "
-                        "(inconsistencies %d → %d)",
+                        "(post-merge model inconsistent)",
                         best_target, candidate, best_score,
-                        pre_incon, post_incon,
                     )
                     failed.add(_canon(best_target, candidate))
                     efsm = backup
                     vars_map = backup_vars
                 else:
                     merged = True
-                    # Update cached count for next iteration.
-                    cached_incon = post_incon
             else:
                 merged = True
 
@@ -298,6 +280,8 @@ def _compute_edsm_score(
     s1: str,
     s2: str,
     *,
+    classifiers: Classifiers | None = None,
+    variables: list[str] | None = None,
     _visited: set[tuple[str, str]] | None = None,
 ) -> int:
     """Recursively compute the EDSM compatibility score for merging
@@ -307,14 +291,17 @@ def _compute_edsm_score(
     share the same activity label and recurses into their
     successor states.
 
+    When *classifiers* and *variables* are provided (MINT mode,
+    Algorithm 3), a shared-label pair only contributes to the
+    score if the two transition groups are **classifier-equivalent**
+    (Algorithm 3, lines 26–33).  This avoids inflating the score
+    for pairs that would be rejected during the merge anyway.
+
     A return value of ``-1`` signals incompatibility (merging
     would produce a contradiction).
 
     Corresponds to ``calculateScore`` in Algorithm 2 of
-    Walkinshaw et al. (2013).  The score is **strategy-agnostic**
-    — classifiers are NOT used here.  They are only consulted
-    during the merge operation itself (Algorithm 3:
-    ``equivalentTransitions`` + ``isConsistent``).
+    Walkinshaw et al. (2013), extended by Algorithm 3 for MINT.
     """
     if _visited is None:
         _visited = set()
@@ -337,11 +324,29 @@ def _compute_edsm_score(
 
     score = 0
 
+    # Leaf-state bonus: if both states are accepting leaves with
+    # no outgoing transitions, they are structurally equivalent
+    # end-of-trace states.  Give them a score of +1 so they are
+    # preferred merge partners (avoids proliferation of distinct
+    # final states in process mining settings).
+    if not out1 and not out2:
+        if s1 in efsm.accepting_states and s2 in efsm.accepting_states:
+            return 1
+        return 0
+
     for activity in shared:
         ts1 = out1[activity]
         ts2 = out2[activity]
 
-        # Algorithm 2: any shared label contributes +1.
+        # MINT mode (Algorithm 3, lines 26–33): only count this
+        # shared label if the transitions are classifier-equivalent.
+        if classifiers is not None and variables is not None:
+            if not _transitions_classifier_equivalent(
+                ts1, ts2, activity, classifiers, variables,
+            ):
+                continue
+
+        # Algorithm 2: classifier-compatible shared label contributes +1.
         score += 1
 
         # Recurse into successor states.
@@ -351,6 +356,8 @@ def _compute_edsm_score(
             if t1 != t2:
                 sub = _compute_edsm_score(
                     efsm, t1, t2,
+                    classifiers=classifiers,
+                    variables=variables,
                     _visited=_visited,
                 )
                 if sub < 0:
@@ -585,9 +592,10 @@ def _find_equivalent_target_groups(
 ) -> list[list[str]]:
     """Group target states whose transitions are classifier-equivalent.
 
-    Two targets are equivalent iff for **every** pair of data values
-    attached to their transitions, the classifier C_{activity}
-    produces the **same** prediction (Algorithm 3, lines 26–33).
+    Two targets are equivalent iff there **exists** at least one pair
+    of data values (one from each group) for which the classifier
+    C_{activity} produces the **same** prediction (Algorithm 3,
+    lines 26–33, existential check).
 
     Returns a list of groups (each group = list of target-state ids
     that should be merged together).
@@ -635,23 +643,33 @@ def _transitions_classifier_equivalent(
     """Check whether two groups of transitions (same label) are
     *classifier-equivalent*.
 
-    Equivalent means: for **every** data vector attached to either
-    group, the classifier predicts the **same** next event.
+    Per Walkinshaw et al. (2013), Algorithm 3, lines 26–33:
+    equivalentTransitions uses an **existential** check — return
+    True if there exists ANY pair of data vectors (one from each
+    group) for which the classifier predicts the same next event.
     """
-    all_predictions: set[str] = set()
+    preds_1: set[str] = set()
+    preds_2: set[str] = set()
 
-    for group in (ts1, ts2):
-        for t in group:
-            for data in t.data_samples:
-                pred = predict_next_label(classifiers, activity, data, variables)
-                if pred is not None:
-                    all_predictions.add(pred)
+    for t in ts1:
+        for data in t.data_samples:
+            pred = predict_next_label(classifiers, activity, data, variables)
+            if pred is not None:
+                preds_1.add(pred)
 
-    # If the classifier gives the same prediction for all data in
-    # both groups, the transitions are equivalent (same logical
-    # successor).  If predictions differ, the transitions are
-    # distinguishable by data.
-    return len(all_predictions) <= 1
+    for t in ts2:
+        for data in t.data_samples:
+            pred = predict_next_label(classifiers, activity, data, variables)
+            if pred is not None:
+                preds_2.add(pred)
+
+    # Existential: equivalent iff the two prediction sets share
+    # at least one common prediction (Algorithm 3, lines 26–33).
+    # If either group has no predictions, fall back to True
+    # (no evidence to distinguish them).
+    if not preds_1 or not preds_2:
+        return True
+    return bool(preds_1 & preds_2)
 
 
 # ═══════════════════════════════════════════════════════════════════════════

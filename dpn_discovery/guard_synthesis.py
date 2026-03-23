@@ -91,6 +91,47 @@ class GuardNode:
             case _:
                 return f"?{self.kind}"
 
+    def evaluate(self, sample: dict[str, Any]) -> bool | None:
+        """Evaluate the guard under a concrete variable assignment.
+
+        Returns ``True`` / ``False`` when all referenced variables
+        are present and numeric in *sample*, or ``None`` when a
+        required variable is missing (caller should fall back to SMT).
+        """
+        match self.kind:
+            case "leq":
+                v = sample.get(self.variable)
+                return v <= self.constant if isinstance(v, (int, float)) else None
+            case "gt":
+                v = sample.get(self.variable)
+                return v > self.constant if isinstance(v, (int, float)) else None
+            case "eq":
+                v = sample.get(self.variable)
+                return abs(v - self.constant) < 1e-9 if isinstance(v, (int, float)) else None
+            case "and":
+                for c in self.children:
+                    r = c.evaluate(sample)
+                    if r is None:
+                        return None
+                    if not r:
+                        return False
+                return True
+            case "or":
+                for c in self.children:
+                    r = c.evaluate(sample)
+                    if r is None:
+                        return None
+                    if r:
+                        return True
+                return False
+            case "not":
+                r = self.children[0].evaluate(sample)
+                return (not r) if r is not None else None
+            case "true":
+                return True
+            case _:
+                return None
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 2.  PHOG context model  (Lee et al. §3)
@@ -231,15 +272,54 @@ def _admissible_heuristic(node: GuardNode) -> float:
     return 0.0
 
 
+def _check_disjoint_from(
+    candidate: GuardNode,
+    prev_guards: list[GuardNode],
+    variables: list[str],
+) -> bool:
+    """Check that *candidate* is symbolically disjoint from every
+    guard in *prev_guards*.
+
+    For each previous guard φ, checks that  φ ∧ candidate  is
+    UNSAT — i.e. no variable assignment can satisfy both
+    simultaneously.
+    """
+    if not prev_guards:
+        return True
+
+    smt = get_solver()
+    smt_vars = {v: smt.Real(v) for v in variables}
+    cand_expr = candidate.to_smt(smt_vars, smt)
+
+    for prev in prev_guards:
+        prev_expr = prev.to_smt(smt_vars, smt)
+        with smt.create_context(timeout_ms=3000) as ctx:
+            ctx.add(cand_expr)
+            ctx.add(prev_expr)
+            if ctx.check() != SatResult.UNSAT:
+                return False
+    return True
+
+
 def _search_guard(
     positive: list[dict[str, Any]],
     negative: list[dict[str, Any]],
     variables: list[str],
     phog: PHOGModel,
     max_candidates: int = 5000,
+    disjoint_from: list[GuardNode] | None = None,
 ) -> GuardNode | None:
     """A*-search for the minimal guard that covers *positive*
-    and rejects *negative*.
+    and rejects *negative*, optionally disjoint from previously
+    synthesised guards.
+
+    Parameters
+    ----------
+    disjoint_from : list[GuardNode] | None
+        When provided, the returned guard is guaranteed to be
+        symbolically disjoint from every guard in this list
+        (i.e. their conjunction is UNSAT for all variable
+        assignments).
 
     Returns ``None`` if no satisfying guard is found within the
     exploration budget.
@@ -252,11 +332,41 @@ def _search_guard(
         # No numeric variables → return trivial guard.
         return GuardNode(kind="true")
 
-    # --- Phase 1: atomic candidates (depth 1) ----------------------------
-    heap: list[_SearchNode] = []
     ctx_root = PHOGContext(
         parent_symbol="Guard", left_sibling=None, depth=0, grandparent=None
     )
+
+    # --- Quick feasibility pre-check ------------------------------------
+    # If no single atom can separate *any* positive from *any* negative
+    # sample, composites won't help either — bail out immediately.
+    best_score = 0.0
+    best_atom: GuardNode | None = None
+    n_total = len(positive) + len(negative)
+    for atom in atoms:
+        tp = sum(1 for s in positive if atom.evaluate(s) is True)
+        tn = sum(1 for s in negative if atom.evaluate(s) in (False, None))
+        score = (tp + tn) / n_total if n_total else 0.0
+        # Perfect atom — return immediately, skip A*.
+        if tp == len(positive) and tn == len(negative):
+            if disjoint_from and not _check_disjoint_from(atom, disjoint_from, variables):
+                continue
+            phog.observe(ctx_root, atom.kind)
+            return atom
+        if score > best_score:
+            best_score = score
+            best_atom = atom
+    # If the best single atom can't beat random guessing, the search
+    # over conjunctions / disjunctions won't find anything useful.
+    if best_score <= 0.5:
+        return None
+    # Scale the exploration budget by how promising the best atom looks.
+    # A best-score of 0.95 keeps the full budget; 0.6 limits to ~20%.
+    if best_score < 0.95:
+        scale = max(0.1, (best_score - 0.5) / (0.95 - 0.5))
+        max_candidates = max(50, int(max_candidates * scale))
+
+    # --- Phase 1: atomic candidates (depth 1) ----------------------------
+    heap: list[_SearchNode] = []
 
     for atom in atoms:
         log_p = phog.log_probability(ctx_root, atom.kind)
@@ -268,7 +378,14 @@ def _search_guard(
         node = heapq.heappop(heap)
         visited += 1
 
-        if _verify_guard(node.candidate, positive, negative, variables):
+        if _verify_guard_fast(node.candidate, positive, negative, variables):
+            # Check symbolic disjointness with previously synthesised
+            # guards (sequential partition enforcement).
+            if disjoint_from and not _check_disjoint_from(
+                node.candidate, disjoint_from, variables
+            ):
+                # Overlaps with a previous guard — keep searching.
+                continue
             # Update PHOG model with successful derivation.
             phog.observe(ctx_root, node.candidate.kind)
             return node.candidate
@@ -308,6 +425,39 @@ def _search_guard(
 # ═══════════════════════════════════════════════════════════════════════════
 # 5.  Z3-based verification  (coverage + disjointness)
 # ═══════════════════════════════════════════════════════════════════════════
+
+def _verify_guard_fast(
+    guard: GuardNode,
+    positive: list[dict[str, Any]],
+    negative: list[dict[str, Any]],
+    variables: list[str],
+) -> bool:
+    """Fast pure-Python guard verification.
+
+    Uses ``GuardNode.evaluate()`` for concrete evaluation.
+    Falls back to the SMT-based ``_verify_guard()`` only when
+    ``evaluate`` returns ``None`` (i.e. a required variable is
+    missing from a sample).
+    """
+    # Coverage: guard must be True for every positive sample.
+    for sample in positive:
+        result = guard.evaluate(sample)
+        if result is None:
+            # Fallback to SMT for this candidate.
+            return _verify_guard(guard, positive, negative, variables)
+        if not result:
+            return False
+
+    # Exclusion: guard must be False for every negative sample.
+    for sample in negative:
+        result = guard.evaluate(sample)
+        if result is None:
+            return _verify_guard(guard, positive, negative, variables)
+        if result:
+            return False
+
+    return True
+
 
 def _verify_guard(
     guard: GuardNode,
@@ -356,6 +506,62 @@ def _substitute(
         if v in sample and isinstance(sample[v], (int, float))
     ]
     return smt.substitute(expr, *substitutions)
+
+
+def _verify_partition_smt(
+    guard_nodes: list[GuardNode],
+    variables: list[str],
+    context: str,
+) -> bool:
+    """Verify that *guard_nodes* form a partition of the
+    variable space — pairwise disjoint and jointly exhaustive.
+
+    All guards are re-compiled from their AST representation
+    using a **single** set of SMT variables, ensuring that
+    solver backends with per-call variable scoping (e.g. Yices2)
+    produce correct results.
+
+    Returns ``True`` iff the partition property holds.  Logs
+    warnings for every violation detected.
+    """
+    if len(guard_nodes) < 2:
+        return True
+
+    smt = get_solver()
+    smt_vars = {v: smt.Real(v) for v in variables}
+    guard_formulas = [gn.to_smt(smt_vars, smt) for gn in guard_nodes]
+    all_ok = True
+
+    # 1. Pairwise disjointness:  φᵢ ∧ φⱼ  must be UNSAT ∀ i ≠ j.
+    for i in range(len(guard_formulas)):
+        for j in range(i + 1, len(guard_formulas)):
+            with smt.create_context(timeout_ms=3000) as ctx:
+                ctx.add(guard_formulas[i])
+                ctx.add(guard_formulas[j])
+                if ctx.check() != SatResult.UNSAT:
+                    logger.warning(
+                        "  Partition violation (%s): guards %d and %d overlap",
+                        context, i, j,
+                    )
+                    all_ok = False
+
+    # 2. Exhaustive coverage:  ¬(φ₁ ∨ … ∨ φₖ)  must be UNSAT.
+    with smt.create_context(timeout_ms=3000) as ctx:
+        ctx.add(smt.Not(smt.Or(*guard_formulas)))
+        if ctx.check() != SatResult.UNSAT:
+            logger.warning(
+                "  Partition violation (%s): guards are not exhaustive",
+                context,
+            )
+            all_ok = False
+
+    if all_ok:
+        logger.info(
+            "  Partition verified (%s): %d guards are pairwise "
+            "disjoint and exhaustive",
+            context, len(guard_formulas),
+        )
+    return all_ok
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -447,56 +653,102 @@ def _synthesise_pairwise_activity_guards(
     variables: list[str],
     phog: PHOGModel,
 ) -> None:
-    """Synthesise guards for pairwise cross-activity competition.
+    """Synthesise guards for cross-activity competition.
 
-    For each pair of activities ``(a_i, a_j)`` emanating from the
-    same source state, attempt to find a guard that separates the
-    data samples of ``a_i`` from those of ``a_j``.  If a guard is
-    found, assign it to all transitions of ``a_i`` and its negation
-    to all transitions of ``a_j``.
+    Uses **sequential one-vs-rest** synthesis with disjointness
+    constraints to guarantee a pairwise-disjoint and jointly-
+    exhaustive guard partition:
 
-    Only transitions that have **not** yet been assigned a guard are
-    considered.  When the data is inseparable (e.g. Submit has all
-    amounts), the pair is skipped and both stay ⊤.
+      1. For branches 1 … k−1: find a guard that separates the
+         branch's samples from all others AND is symbolically
+         disjoint from every previously synthesised guard.
+      2. For the last branch k: assign  ¬(φ₁ ∨ … ∨ φₖ₋₁),
+         which is correct by construction.
+
+    When the data is inseparable the transition stays ⊤.
     """
-    from itertools import combinations
+    # Identify activities that still need guards.
+    unguarded = [
+        act for act in activities
+        if all(t.guard_formula is None for t in by_activity[act])
+    ]
 
-    for act_a, act_b in combinations(activities, 2):
-        ts_a = by_activity[act_a]
-        ts_b = by_activity[act_b]
+    if len(unguarded) < 2:
+        return
 
-        # Skip if already guarded from a previous pair.
-        if all(t.guard_formula is not None for t in ts_a) and \
-           all(t.guard_formula is not None for t in ts_b):
+    synthesized_nodes: list[GuardNode] = []
+    all_guard_nodes: list[GuardNode] = []
+
+    for idx, act in enumerate(unguarded):
+        ts_act = by_activity[act]
+
+        # Skip if already guarded (e.g. by same-activity handler).
+        if all(t.guard_formula is not None for t in ts_act):
             continue
 
-        # Guards evaluate the *pre-state* (state before the transition
-        # fires), so we collect pre-snapshots from pre_post_pairs.
-        # Fall back to data_samples for backward compatibility.
+        is_last = (idx == len(unguarded) - 1)
+        all_previous_ok = (len(synthesized_nodes) == idx)
+
+        # ── Last branch: assign  ¬(φ₁ ∨ … ∨ φₖ₋₁)  ────────────────
+        if is_last and all_previous_ok and synthesized_nodes:
+            if len(synthesized_nodes) == 1:
+                neg_node = GuardNode(
+                    kind="not", children=(synthesized_nodes[0],),
+                )
+            else:
+                or_node = GuardNode(
+                    kind="or", children=tuple(synthesized_nodes),
+                )
+                neg_node = GuardNode(
+                    kind="not", children=(or_node,),
+                )
+
+            smt = get_solver()
+            smt_vars = {v: smt.Real(v) for v in variables}
+            guard_expr = neg_node.to_smt(smt_vars, smt)
+            for t in ts_act:
+                if t.guard_formula is None:
+                    t.guard_formula = guard_expr
+            all_guard_nodes.append(neg_node)
+            logger.debug(
+                "  Last-branch negation guard for '%s': %s",
+                act, neg_node.pretty(),
+            )
+            continue
+
+        # ── One-vs-rest with disjointness constraints ───────────────
         positive: list[dict[str, Any]] = []
-        for t in ts_a:
+        for t in ts_act:
             positive.extend(_guard_samples(t))
+
         negative: list[dict[str, Any]] = []
-        for t in ts_b:
-            negative.extend(_guard_samples(t))
+        for other_act in activities:
+            if other_act == act:
+                continue
+            for t in by_activity[other_act]:
+                negative.extend(_guard_samples(t))
 
         if not positive or not negative:
             continue
 
-        guard_node = _search_guard(positive, negative, variables, phog)
+        guard_node = _search_guard(
+            positive, negative, variables, phog,
+            disjoint_from=synthesized_nodes if synthesized_nodes else None,
+        )
 
         if guard_node is not None:
+            synthesized_nodes.append(guard_node)
+            all_guard_nodes.append(guard_node)
             smt = get_solver()
             smt_vars = {v: smt.Real(v) for v in variables}
             guard_expr = guard_node.to_smt(smt_vars, smt)
-            neg_guard_expr = smt.Not(guard_expr)
-
-            for t in ts_a:
+            for t in ts_act:
                 if t.guard_formula is None:
                     t.guard_formula = guard_expr
-            for t in ts_b:
-                if t.guard_formula is None:
-                    t.guard_formula = neg_guard_expr
+
+    # ── Post-synthesis partition verification ────────────────────────
+    if len(all_guard_nodes) >= 2:
+        _verify_partition_smt(all_guard_nodes, variables, "cross-activity")
 
 
 def _synthesise_competing_guards(
@@ -507,13 +759,44 @@ def _synthesise_competing_guards(
     """Synthesise pairwise-disjoint guards for *transitions*
     that share a source state and activity label.
 
-    For each transition  tᵢ  the positive samples are its own
-    ``data_samples`` and the negative samples are the union of
-    all other transitions' ``data_samples``.
-
-    The guard is placed onto ``transition.guard_formula``.
+    Uses sequential synthesis with disjointness constraints.
+    The last transition receives  ¬(φ₁ ∨ … ∨ φₖ₋₁)  to
+    guarantee an exhaustive and disjoint partition.
     """
+    if len(transitions) < 2:
+        # Single transition — trivially guarded.
+        if transitions:
+            transitions[0].guard_formula = get_solver().BoolVal(True)
+        return
+
+    synthesized_nodes: list[GuardNode] = []
+    all_guard_nodes: list[GuardNode] = []
+
     for i, t_i in enumerate(transitions):
+        is_last = (i == len(transitions) - 1)
+        all_previous_ok = (len(synthesized_nodes) == i)
+
+        # ── Last transition: negation ────────────────────────────────
+        if is_last and all_previous_ok and synthesized_nodes:
+            if len(synthesized_nodes) == 1:
+                neg_node = GuardNode(
+                    kind="not", children=(synthesized_nodes[0],),
+                )
+            else:
+                or_node = GuardNode(
+                    kind="or", children=tuple(synthesized_nodes),
+                )
+                neg_node = GuardNode(
+                    kind="not", children=(or_node,),
+                )
+
+            smt = get_solver()
+            smt_vars = {v: smt.Real(v) for v in variables}
+            t_i.guard_formula = neg_node.to_smt(smt_vars, smt)
+            all_guard_nodes.append(neg_node)
+            continue
+
+        # ── One-vs-rest with disjointness constraints ────────────────
         positive = _guard_samples(t_i)
         negative: list[dict[str, Any]] = []
         for j, t_j in enumerate(transitions):
@@ -524,12 +807,21 @@ def _synthesise_competing_guards(
             t_i.guard_formula = get_solver().BoolVal(True)
             continue
 
-        guard_node = _search_guard(positive, negative, variables, phog)
+        guard_node = _search_guard(
+            positive, negative, variables, phog,
+            disjoint_from=synthesized_nodes if synthesized_nodes else None,
+        )
 
         if guard_node is not None:
+            synthesized_nodes.append(guard_node)
+            all_guard_nodes.append(guard_node)
             smt = get_solver()
             smt_vars = {v: smt.Real(v) for v in variables}
             t_i.guard_formula = guard_node.to_smt(smt_vars, smt)
         else:
             # Fallback: unconstrained guard (best-effort).
             t_i.guard_formula = get_solver().BoolVal(True)
+
+    # ── Post-synthesis partition verification ────────────────────────
+    if len(all_guard_nodes) >= 2:
+        _verify_partition_smt(all_guard_nodes, variables, "same-activity")

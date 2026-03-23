@@ -19,7 +19,6 @@ from dpn_discovery.models import EFSM, DataPetriNet
 from dpn_discovery.pipeline import run_pipeline_full
 from dpn_discovery.smt import get_solver, set_solver
 from dpn_discovery.smt.yices2_solver import Yices2SMTSolver
-from dpn_discovery.smt.yices2_solver import Yices2SMTSolver
 from dpn_discovery.visualization import DPNVisualizer, VisualizerSettings
 
 DATAPATH = Path(__file__).resolve().parent / "data"
@@ -109,16 +108,18 @@ def run_on_log(tc: TestCase) -> None:
     logger.info("")
 
 
-sepsis_log = TestCase("Sepsis", Path("/Users/christianimenkamp/Documents/Data-Repository/Community/sepsis/Sepsis Cases - Event Log.xes"), DATAPATH / "sepsis/petri-net.png", sample_ratio=0.05)
-road_fine = TestCase("Road Fine", Path("/Users/christianimenkamp/Documents/Data-Repository/Community/Road-Traffic-Fine-Management-Process/Road_Traffic_Fine_Management_Process.xes"), DATAPATH / "road_fine/petri-net.png", sample_ratio=0.05)
+sepsis_log = TestCase("Sepsis", Path("/Users/christianimenkamp/Documents/Data-Repository/Community/sepsis/Sepsis Cases - Event Log.xes"), DATAPATH / "sepsis/petri-net.png", sample_ratio=0.1)
+hospital_billing = TestCase("Hospital Billing", Path("/Users/christianimenkamp/Documents/Data-Repository/Community/hospital-billing/hospital-billing.xes"), DATAPATH / "hospital_billing/petri-net.png", sample_ratio=0.1)
+road_fine = TestCase("Road Fine", Path("/Users/christianimenkamp/Documents/Data-Repository/Community/Road-Traffic-Fine-Management-Process/Road_Traffic_Fine_Management_Process.xes"), DATAPATH / "road_fine/petri-net.png", sample_ratio=0.1)
 
 if __name__ == "__main__":
-    settings = VisualizerSettings(output_format="png", rankdir="LR")
-    viz = DPNVisualizer(settings)
-    
-    set_solver(Yices2SMTSolver())
-
-    run_on_log(road_fine)
-
-
-    # run_on_log(sepsis_log)
+    # Run the pipeline on all test cases and print the discovered models.
+    for tc in [sepsis_log, road_fine, hospital_billing]:
+        try:    
+            settings = VisualizerSettings(output_format="png", rankdir="LR")
+            set_solver(Yices2SMTSolver())
+            viz = DPNVisualizer(settings)
+            
+            run_on_log(tc)
+        except Exception as e:
+            logger.error("  Error while processing %s: %s", tc.name, e) 

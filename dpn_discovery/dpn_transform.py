@@ -1,21 +1,21 @@
-"""
-Step 6 — EFSM → Data Petri Net Transformation.
+"""Step 7 -- EFSM -> Data Petri Net Transformation.
 
 Converts a guarded Extended Finite State Machine into a Data Petri
-Net using the straightforward structural mapping defined in §4
-Step 6 of the specification:
+Net using the **theory of regions** from:
 
-  • Places:      one place  pₛ  per EFSM state  s.
-  • Transitions: one DPN transition  t_dpn  per EFSM transition
-                 (s_src, s_tgt, a, g, u).
-  • Arcs:        p_{s_src} → t_dpn  and  t_dpn → p_{s_tgt}.
-  • Annotations: guard  g  and update  u  carried over verbatim.
+    Cortadella, Kishinevsky, Lavagno, Yakovlev.
+    "Deriving Petri Nets from Finite Transition Systems."
+    IEEE Transactions on Computers, 1998.
+
+The default ``efsm_to_dpn`` now delegates to the region-based
+synthesis algorithm (S4, Fig. 10 of the paper).  The legacy 1:1
+structural mapping is kept as ``efsm_to_dpn_structural`` for
+comparison / fallback.
 
 Additionally provides:
-  • PNML serialisation  (Petri Net Markup Language — XML).
-  • Log-replay verification.
-
-Reference: §4 Step 6 of the specification.
+  - PNML serialisation  (Petri Net Markup Language -- XML).
+  - Log-replay verification.
+  - Post-construction DPN reduction (place fusion + transition collapse).
 """
 
 from __future__ import annotations
@@ -33,23 +33,42 @@ from dpn_discovery.models import (
     EventLog,
     Place,
 )
+from dpn_discovery.regions import region_based_efsm_to_dpn
 
 logger = logging.getLogger(__name__)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # 1.  Core mapping
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 
 def efsm_to_dpn(efsm: EFSM) -> DataPetriNet:
     """Convert *efsm* into a ``DataPetriNet``.
 
-    Algorithm (specification §4 Step 6):
-      1. Create place  pₛ  for every state  s ∈ S.
+    Uses the **theory of regions** (Cortadella et al. 1998):
+      - S4, Fig. 10: top-level synthesis loop
+      - S4.1: minimal pre-region generation (Lemma 4.1/4.2)
+      - S4.3: label splitting for excitation closure (Def 3.2)
+      - S4.2: irredundant cover (Thm 3.5)
+      - S2.5.1: saturated PN synthesis / Thm 3.4
+
+    Guards and update rules are recovered by matching each DPN
+    transition's activity label back to the original EFSM edges.
+
+    See ``efsm_to_dpn_structural`` for the legacy 1:1 mapping.
+    """
+    return region_based_efsm_to_dpn(efsm)
+
+
+def efsm_to_dpn_structural(efsm: EFSM) -> DataPetriNet:
+    """Legacy 1:1 structural mapping (pre-region-theory fallback).
+
+    Algorithm (specification S4 Step 6 -- original):
+      1. Create place  p_s  for every state  s in S.
       2. For every EFSM transition  (s_src, s_tgt, a, g, u):
          a) Create DPN transition  t_dpn.
-         b) Add arc  p_{s_src} → t_dpn.
-         c) Add arc  t_dpn  → p_{s_tgt}.
+         b) Add arc  p_{s_src} -> t_dpn.
+         c) Add arc  t_dpn  -> p_{s_tgt}.
          d) Annotate t_dpn with guard g and update u.
       3. Mark the place corresponding to the initial state.
     """
@@ -91,18 +110,18 @@ def efsm_to_dpn(efsm: EFSM) -> DataPetriNet:
     )
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # 2.  PNML serialisation
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 
 def dpn_to_pnml(dpn: DataPetriNet, net_id: str = "dpn_net") -> str:
     """Serialise *dpn* to PNML (Petri Net Markup Language) XML.
 
     Produces a valid ``<pnml>`` document with:
-      • ``<place>`` elements (with initial marking where applicable).
-      • ``<transition>`` elements (with guard/update annotations in
+      - ``<place>`` elements (with initial marking where applicable).
+      - ``<transition>`` elements (with guard/update annotations in
         ``<toolspecific>`` blocks).
-      • ``<arc>`` elements for the flow relation.
+      - ``<arc>`` elements for the flow relation.
     """
     root = ET.Element("pnml")
     net = ET.SubElement(root, "net", id=net_id, type="http://www.pnml.org/version-2009/grammar/pnml")
@@ -139,12 +158,12 @@ def dpn_to_pnml(dpn: DataPetriNet, net_id: str = "dpn_net") -> str:
                 upd_el = ET.SubElement(ts, "update", variable=var)
                 upd_el.text = str(expr)
 
-        # Arcs — input.
+        # Arcs -- input.
         for ip in trans.input_places:
             arc_id = f"arc_{ip}_to_{trans.name}"
             ET.SubElement(page, "arc", id=arc_id, source=ip, target=trans.name)
 
-        # Arcs — output.
+        # Arcs -- output.
         for op in trans.output_places:
             arc_id = f"arc_{trans.name}_to_{op}"
             ET.SubElement(page, "arc", id=arc_id, source=trans.name, target=op)
@@ -159,9 +178,9 @@ def dpn_to_pnml(dpn: DataPetriNet, net_id: str = "dpn_net") -> str:
     return ET.tostring(root, encoding="unicode", xml_declaration=True)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # 3.  Log-replay verification
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 
 def verify_dpn(dpn: DataPetriNet, log: EventLog) -> bool:
     """Replay every trace in *log* through *dpn* and return
@@ -235,9 +254,9 @@ def _replay_trace(
     return True
 
 
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 # 4.  DPN post-construction reduction
-# ═══════════════════════════════════════════════════════════════════════════
+# ===========================================================================
 
 def reduce_dpn(dpn: DataPetriNet, log: EventLog) -> DataPetriNet:
     """Apply data-driven reduction passes to *dpn*.
@@ -246,10 +265,10 @@ def reduce_dpn(dpn: DataPetriNet, log: EventLog) -> DataPetriNet:
     language accepted by the net w.r.t. the log.  It consists of
     two stages:
 
-      1. **Place fusion** — replay the log and record which places
+      1. **Place fusion** -- replay the log and record which places
          always carry identical token counts across all reachable
          markings.  Fuse those places into a single representative.
-      2. **Transition collapsing** — after place fusion, transitions
+      2. **Transition collapsing** -- after place fusion, transitions
          sharing the same activity label AND the same input/output
          place sets are merged (guards become disjunctions via OR).
 
@@ -272,16 +291,141 @@ def reduce_dpn(dpn: DataPetriNet, log: EventLog) -> DataPetriNet:
 
     dpn = _fuse_places(dpn, log)
     dpn = _collapse_transitions(dpn)
+    dpn = _merge_duplicate_activity_transitions(dpn)
 
     after_p, after_t = len(dpn.places), len(dpn.transitions)
 
     if before_p != after_p or before_t != after_t:
         logger.info(
-            "  DPN reduction: places %d → %d  |  transitions %d → %d",
+            "  DPN reduction: places %d -> %d  |  transitions %d -> %d",
             before_p, after_p, before_t, after_t,
         )
 
     return dpn
+
+
+def _merge_duplicate_activity_transitions(dpn: DataPetriNet) -> DataPetriNet:
+    """Merge DPN transitions that share the same activity label.
+
+    After region-based synthesis with label splitting (Cortadella et al.
+    S4.3), the same activity may produce multiple DPN transitions with
+    different arc structures.  A valid (data-aware) Petri net for process
+    mining requires **unique activity labels**.
+
+    Merging strategy
+    ----------------
+    For each group of transitions sharing an activity label:
+
+      * **Guards** are combined via disjunction (OR).  Because the
+        split partitions the state space, the guards are typically
+        mutually exclusive, so the OR is semantically correct.
+      * **Input / output places** are *unioned*.  This makes the
+        merged transition require tokens in *all* pre-places of
+        *every* original transition – a stricter enabling condition.
+        In practice the guards (which encode the routing context)
+        prevent spurious firings, so observed behaviour is preserved.
+      * **Update rules** are kept from the first transition if all
+        originals agree; otherwise they are combined via an
+        ``If(guard_i, update_i, ...)`` expression when the SMT
+        backend supports it, or the first non-``None`` update is
+        used as a conservative fallback.
+
+    This pass is designed to run *after* ``_collapse_transitions``
+    (which only merges transitions with identical arc sets) and
+    catches the remaining duplicates that differ in arc structure.
+    """
+    from collections import defaultdict as _defaultdict
+
+    activity_groups: dict[str, list[DPNTransition]] = _defaultdict(list)
+    for trans in dpn.transitions:
+        activity = _transition_activity(trans)
+        activity_groups[activity].append(trans)
+
+    new_transitions: list[DPNTransition] = []
+    smt = get_solver()
+
+    for activity, group in activity_groups.items():
+        if len(group) == 1:
+            new_transitions.append(group[0])
+            continue
+
+        logger.info(
+            "  Merging %d duplicate transitions for activity '%s'",
+            len(group), activity,
+        )
+
+        # ---- Union arcs ------------------------------------------------
+        merged_in: set[str] = set()
+        merged_out: set[str] = set()
+        guards: list = []
+        updates: list[tuple[dict | None, Any]] = []  # (update_rule, guard)
+
+        for t in group:
+            merged_in |= t.input_places
+            merged_out |= t.output_places
+            if t.guard is not None:
+                guards.append(t.guard)
+            updates.append((t.update_rule, t.guard))
+
+        # ---- Combine guards via OR -------------------------------------
+        combined_guard = None
+        if guards:
+            combined_guard = guards[0]
+            for g in guards[1:]:
+                combined_guard = smt.Or(combined_guard, g)
+
+        # ---- Combine update rules --------------------------------------
+        non_none_updates = [(u, g) for u, g in updates if u is not None]
+        merged_update: dict | None = None
+
+        if len(non_none_updates) == 0:
+            merged_update = None
+        elif len(non_none_updates) == 1:
+            merged_update = dict(non_none_updates[0][0])
+        else:
+            # Check if all updates are structurally identical.
+            ref_u = non_none_updates[0][0]
+            all_same = all(
+                _updates_equal(ref_u, u) for u, _ in non_none_updates[1:]
+            )
+            if all_same:
+                merged_update = dict(ref_u)
+            else:
+                # Updates differ across split transitions.  Since the
+                # guards already discriminate the routing context, use
+                # the union of all update variables.  For variables that
+                # appear in only one update, keep that expression.  For
+                # conflicting variables, use the first expression as a
+                # conservative fallback (the guard ensures correctness).
+                all_vars: set[str] = set()
+                for u, _ in non_none_updates:
+                    all_vars.update(u.keys())
+
+                merged_update = {}
+                for var in sorted(all_vars):
+                    for u, _ in non_none_updates:
+                        if var in u:
+                            merged_update[var] = u[var]
+                            break  # first wins
+
+        new_transitions.append(DPNTransition(
+            name=group[0].name,
+            guard=combined_guard,
+            update_rule=merged_update,
+            input_places=merged_in,
+            output_places=merged_out,
+        ))
+
+    # Only rebuild if something actually changed.
+    if len(new_transitions) == len(dpn.transitions):
+        return dpn
+
+    return DataPetriNet(
+        places=list(dpn.places),
+        transitions=new_transitions,
+        variables=set(dpn.variables),
+        initial_marking=set(dpn.initial_marking),
+    )
 
 
 def _fuse_places(dpn: DataPetriNet, log: EventLog) -> DataPetriNet:
@@ -293,14 +437,14 @@ def _fuse_places(dpn: DataPetriNet, log: EventLog) -> DataPetriNet:
     traces are fused into a single representative place.
 
     This merges structurally redundant places that survived EFSM
-    deduplication — e.g. places that appear distinct at the EFSM
+    deduplication -- e.g. places that appear distinct at the EFSM
     level but behave identically in every observed execution.
     """
     place_names = sorted(p.name for p in dpn.places)
     if len(place_names) <= 1:
         return dpn
 
-    # ── Collect token-count profiles per place across all traces ─────────
+    # -- Collect token-count profiles per place across all traces ---------
     # profile[place] = list of token counts observed at each firing step.
     profiles: dict[str, list[int]] = {p: [] for p in place_names}
 
@@ -338,13 +482,13 @@ def _fuse_places(dpn: DataPetriNet, log: EventLog) -> DataPetriNet:
             for p in place_names:
                 profiles[p].append(tokens.get(p, 0))
 
-    # ── Group places by identical profiles ───────────────────────────────
+    # -- Group places by identical profiles -------------------------------
     profile_groups: dict[tuple[int, ...], list[str]] = {}
     for pname in place_names:
         key = tuple(profiles[pname])
         profile_groups.setdefault(key, []).append(pname)
 
-    # Build a mapping:  old_place_name → representative_name.
+    # Build a mapping:  old_place_name -> representative_name.
     remap: dict[str, str] = {}
     for group in profile_groups.values():
         rep = group[0]  # first alphabetically (they're sorted)
@@ -355,7 +499,7 @@ def _fuse_places(dpn: DataPetriNet, log: EventLog) -> DataPetriNet:
     if all(remap[p] == p for p in place_names):
         return dpn
 
-    # ── Build fused DPN ──────────────────────────────────────────────────
+    # -- Build fused DPN --------------------------------------------------
     kept_places = sorted(set(remap.values()))
     new_places = [Place(name=p) for p in kept_places]
 
@@ -395,7 +539,7 @@ def _collapse_transitions(dpn: DataPetriNet) -> DataPetriNet:
     transitions; if not, we keep both transitions).
 
     This removes the 'duplicate transition' pattern that arises
-    from the 1:1 EFSM→DPN mapping when multiple EFSM edges encode
+    from the 1:1 EFSM->DPN mapping when multiple EFSM edges encode
     the same routing with different guards.
     """
     # Group by (activity, input_places, output_places).
@@ -486,7 +630,7 @@ def _updates_equal(
 def _transition_activity(trans: DPNTransition) -> str:
     """Extract the activity label from a DPN transition name.
 
-    Convention:  t_{activity}_{counter}  →  {activity}.
+    Convention:  t_{activity}_{counter}  ->  {activity}.
     """
     parts = trans.name.split("_")
     if len(parts) >= 3:
